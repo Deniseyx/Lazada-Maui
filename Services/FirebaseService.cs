@@ -19,23 +19,40 @@ public class FirebaseService
     }
 
     #region Products
-    public async Task<List<Product>> GetProductsAsync()
+    public async Task<List<Product>> GetProductsAsync(string? status = null)
     {
         var products = await _client
             .Child("products")
             .OnceAsync<Product>();
 
-        return products.Select(item => {
+        var list = products.Select(item => {
             item.Object.Id = item.Key;
             return item.Object;
-        }).ToList();
+        });
+
+        if (!string.IsNullOrEmpty(status))
+        {
+            list = list.Where(p => p.Status == status);
+        }
+
+        return list.ToList();
     }
 
     public async Task AddProductAsync(Product product)
     {
+        product.Status = "Pending"; // Ensure it's pending when added
         await _client
             .Child("products")
             .PostAsync(product);
+    }
+
+    public async Task UpdateProductStatusAsync(string productId, string status)
+    {
+        await _client
+            .Child("products")
+            .Child(productId)
+            .Child("Status")
+            .PutAsync($"\"{status}\"");
     }
     #endregion
 
@@ -220,6 +237,49 @@ public class FirebaseService
             .Child("users")
             .Child(profile.Id)
             .PutAsync(profile);
+    }
+    #endregion
+    #region Reviews
+    public async Task<List<Review>> GetReviewsForProductAsync(string productId)
+    {
+        var reviews = await _client
+            .Child("reviews")
+            .OnceAsync<Review>();
+
+        return reviews
+            .Where(r => r.Object.ProductId == productId)
+            .Select(item => {
+                item.Object.Id = item.Key;
+                return item.Object;
+            })
+            .OrderByDescending(r => r.Timestamp)
+            .ToList();
+    }
+
+    public async Task SubmitReviewAsync(Review review)
+    {
+        await _client
+            .Child("reviews")
+            .PostAsync(review);
+            
+        // Optional: Update product aggregate rating
+        var product = await GetProductByIdAsync(review.ProductId);
+        if (product != null)
+        {
+            double totalRating = product.Rating * product.ReviewsCount;
+            product.ReviewsCount++;
+            product.Rating = (totalRating + review.Rating) / product.ReviewsCount;
+            await UpdateProductAsync(product);
+        }
+    }
+
+    public async Task UpdateOrderReviewStatusAsync(string orderId, bool isReviewed)
+    {
+        await _client
+            .Child("orders")
+            .Child(orderId)
+            .Child("IsReviewed")
+            .PutAsync(isReviewed);
     }
     #endregion
 }

@@ -17,6 +17,7 @@ public partial class ProductDetailPage : ContentPage
         BindingContext = _product;
         LoadProductDetails();
         CheckOwnership();
+        LoadReviews();
     }
 
     private void LoadProductDetails()
@@ -26,7 +27,7 @@ public partial class ProductDetailPage : ContentPage
         TitleLabel.Text = _product.Title;
         DescriptionLabel.Text = _product.Description;
         SellerNameLabel.Text = string.IsNullOrEmpty(_product.SellerName) ? "Official Store" : _product.SellerName;
-        RatingLabel.Text = "0.0"; // User requested 0.0 for now
+        RatingLabel.Text = _product.Rating.ToString("F1");
         StockLabel.Text = $"{_product.Stock} items available";
 
         if (_product.Stock <= 0)
@@ -35,6 +36,26 @@ public partial class ProductDetailPage : ContentPage
             AddToCartButton.IsEnabled = false;
             BuyNowButton.Text = "Out of Stock";
             BuyNowButton.BackgroundColor = Colors.Gray;
+        }
+    }
+
+    private async void LoadReviews()
+    {
+        try
+        {
+            var reviews = await _firebaseService.GetReviewsForProductAsync(_product.Id);
+            ReviewsCollection.ItemsSource = reviews;
+            NoReviewsState.IsVisible = reviews.Count == 0;
+            
+            if (reviews.Count > 0)
+            {
+                double avg = reviews.Average(r => r.Rating);
+                RatingLabel.Text = avg.ToString("F1");
+            }
+        }
+        catch (Exception)
+        {
+            // Silent error for reviews
         }
     }
 

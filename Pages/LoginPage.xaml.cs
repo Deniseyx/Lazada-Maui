@@ -29,7 +29,14 @@ public partial class LoginPage : ContentPage
         {
             if (Application.Current != null)
             {
-                Application.Current.MainPage = new AppShell();
+                if (AuthService.IsAdmin)
+                {
+                    Application.Current.MainPage = new AdminDashboardPage();
+                }
+                else
+                {
+                    Application.Current.MainPage = new AppShell();
+                }
             }
         }
         else

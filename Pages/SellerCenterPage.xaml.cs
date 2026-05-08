@@ -32,12 +32,12 @@ public partial class SellerCenterPage : ContentPage
     private async Task LoadData()
     {
         // Load Listings
+        var userId = AuthService.UserId;
         var products = await _firebaseService.GetProductsAsync();
         MyProducts.Clear();
-        foreach (var p in products) MyProducts.Add(p);
+        foreach (var p in products.Where(x => x.SellerId == userId)) MyProducts.Add(p);
 
         // Load Seller Orders
-        var userId = AuthService.UserId;
         if (!string.IsNullOrEmpty(userId))
         {
             var orders = await _firebaseService.GetSellerOrdersAsync(userId);
@@ -125,7 +125,7 @@ public partial class SellerCenterPage : ContentPage
             };
 
             await _firebaseService.AddProductAsync(newProduct);
-            await DisplayAlert("Success", "Product published!", "OK");
+            await DisplayAlert("Success", "Added successfully, awaiting admin approval", "OK");
             
             // Reset form
             ProductNameEntry.Text = string.Empty;

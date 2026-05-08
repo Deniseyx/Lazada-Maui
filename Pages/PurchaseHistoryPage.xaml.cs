@@ -48,4 +48,12 @@ public partial class PurchaseHistoryPage : ContentPage
     {
         await Navigation.PopToRootAsync();
     }
+
+    private async void OnReviewClicked(object sender, EventArgs e)
+    {
+        if (sender is Button btn && btn.CommandParameter is Order order)
+        {
+            await Navigation.PushAsync(new ReviewPage(order));
+        }
+    }
 }

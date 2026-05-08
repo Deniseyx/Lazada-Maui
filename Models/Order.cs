@@ -19,6 +19,7 @@ public class Order
     public double TotalPrice { get; set; }
     
     public string Status { get; set; } = "Pending"; // Pending, Shipped, Delivered, Cancelled
+    public bool IsReviewed { get; set; } = false;
     public string PaymentMethod { get; set; } = "COD"; // COD, GCash, Card
 
     // Shipping Details
@@ -43,4 +44,8 @@ public class Order
     public string ItemsSummary => Items.Count > 1 
         ? $"{Items[0].Title} + {Items.Count - 1} more" 
         : (Items.Count == 1 ? Items[0].Title : "No items");
+
+    public bool CanUpdateStatus => Status != "Delivered" && Status != "Cancelled";
+    public bool IsDelivered => Status == "Delivered";
+    public bool ShowReviewButton => Status == "Delivered" && !IsReviewed;
 }

@@ -47,6 +47,16 @@
                                             <Label Text="{Binding TotalPriceFormatted}" FontAttributes="Bold" TextColor="{StaticResource LazadaOrange}" FontSize="16" />
                                         </HorizontalStackLayout>
                                     </Grid>
+
+                                    <Button Text="Review" 
+                                            BackgroundColor="{StaticResource LazadaOrange}" 
+                                            TextColor="White" 
+                                            FontSize="12" 
+                                            HeightRequest="35"
+                                            CornerRadius="17"
+                                            IsVisible="{Binding ShowReviewButton}"
+                                            Clicked="OnReviewClicked"
+                                            CommandParameter="{Binding .}" />
                                 </VerticalStackLayout>
                             </Frame>
                         </DataTemplate>

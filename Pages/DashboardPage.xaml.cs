@@ -26,7 +26,7 @@ public partial class DashboardPage : ContentPage
     {
         try
         {
-            var items = await _firebaseService.GetProductsAsync();
+            var items = await _firebaseService.GetProductsAsync("Approved");
             Products.Clear();
             foreach (var item in items)
             {
