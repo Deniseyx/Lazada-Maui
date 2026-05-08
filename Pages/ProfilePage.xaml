@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Lazada_Isagunde.Pages.ProfilePage"
+             BackgroundColor="White"
+             Title="Account">
+
+    <Grid WidthRequest="360" HorizontalOptions="Center">
+        <ScrollView>
+            <VerticalStackLayout Spacing="0">
+                <!-- Profile Header -->
+                <Grid BackgroundColor="{StaticResource LazadaOrange}" HeightRequest="150" Padding="20">
+                    <HorizontalStackLayout Spacing="15" VerticalOptions="Center">
+                        <Frame WidthRequest="70" HeightRequest="70" CornerRadius="35" Padding="0" BackgroundColor="White" BorderColor="Transparent">
+                            <Label Text="👤" FontSize="40" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Frame>
+                        <VerticalStackLayout VerticalOptions="Center">
+                            <Label x:Name="HeaderNameLabel" Text="User Name" TextColor="White" FontSize="20" FontAttributes="Bold" />
+                            <Label x:Name="HeaderEmailLabel" Text="user@email.com" TextColor="White" FontSize="14" />
+                            <Label x:Name="HeaderPhoneLabel" Text="No Phone" TextColor="White" FontSize="14" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </Grid>
+
+                <!-- Menu Items -->
+                <VerticalStackLayout Padding="20" Spacing="25">
+                    
+                    <Button Text="Seller Center" 
+                            BackgroundColor="{StaticResource LazadaBlue}" 
+                            TextColor="White" 
+                            FontAttributes="Bold"
+                            HeightRequest="50"
+                            CornerRadius="25"
+                            Clicked="OnSellerCenterClicked" />
+
+                    <BoxView HeightRequest="1" Color="{StaticResource Gray200}" Margin="0,5" />
+
+                    <Label Text="Shipping Information" FontSize="18" FontAttributes="Bold" Margin="0,10,0,0" TextColor="Black" />
+                    <VerticalStackLayout Spacing="10">
+                        <Entry x:Name="FullNameEntry" Placeholder="Full Name" BackgroundColor="{StaticResource Gray100}" HeightRequest="45" TextColor="Black" />
+                        <Entry x:Name="PhoneNumberEntry" Placeholder="Phone Number" Keyboard="Telephone" BackgroundColor="{StaticResource Gray100}" HeightRequest="45" TextColor="Black" />
+                        <Editor x:Name="AddressEditor" Placeholder="Shipping Address" BackgroundColor="{StaticResource Gray100}" HeightRequest="80" TextColor="Black" />
+                        <Button Text="Save Information" 
+                                BackgroundColor="{StaticResource Gray200}" 
+                                TextColor="Black"
+                                HeightRequest="40"
+                                Clicked="OnSaveProfileClicked" />
+                    </VerticalStackLayout>
+
+                    <BoxView HeightRequest="1" Color="{StaticResource Gray200}" Margin="0,10" />
+
+                    <Label Text="My Orders" FontSize="16" HorizontalOptions="Center" TextColor="Black">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnMyOrdersClicked" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label Text="Account Settings" FontSize="16" HorizontalOptions="Center" TextColor="Black" />
+                    <Label Text="Help Center" FontSize="16" HorizontalOptions="Center" TextColor="Black" />
+                    
+                    <Button Text="Log Out" 
+                            BackgroundColor="{StaticResource LazadaOrange}" 
+                            TextColor="White" 
+                            FontAttributes="Bold"
+                            HeightRequest="50"
+                            WidthRequest="200"
+                            CornerRadius="25"
+                            HorizontalOptions="Center"
+                            Margin="0,20,0,0"
+                            Clicked="OnLogoutClicked" />
+
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

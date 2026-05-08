@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="Lazada_Isagunde.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:pages="clr-namespace:Lazada_Isagunde.Pages"
+    Title="Lazada"
+    Shell.BackgroundColor="{StaticResource LazadaOrange}"
+    Shell.ForegroundColor="White"
+    Shell.TitleColor="White">
+
+    <ShellContent
+        ContentTemplate="{DataTemplate pages:DashboardPage}"
+        Route="Dashboard" />
+
+
+
+</Shell>

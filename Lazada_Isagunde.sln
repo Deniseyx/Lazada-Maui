@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36518.9 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lazada_Isagunde", "Lazada_Isagunde.csproj", "{B80CAD13-47D4-4D72-ADA3-772FE066668F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B80CAD13-47D4-4D72-ADA3-772FE066668F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B80CAD13-47D4-4D72-ADA3-772FE066668F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B80CAD13-47D4-4D72-ADA3-772FE066668F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B80CAD13-47D4-4D72-ADA3-772FE066668F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6DA270BF-E2CF-4E4F-B257-4D7ADB5B67B2}
+	EndGlobalSection
+EndGlobal

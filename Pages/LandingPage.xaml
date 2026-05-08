@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Lazada_Isagunde.Pages.LandingPage"
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid WidthRequest="360" HorizontalOptions="Center">
+        <ScrollView>
+            <VerticalStackLayout Padding="30" Spacing="20">
+                <Label Text="Welcome to Lazada" 
+                       TextColor="{StaticResource LazadaBlue}" 
+                       FontSize="32" 
+                       FontAttributes="Bold" 
+                       HorizontalOptions="Center" 
+                       Margin="0,100,0,0" />
+                
+                <Label Text="The best place to find everything you need." 
+                       TextColor="{StaticResource Gray500}" 
+                       FontSize="16" 
+                       HorizontalOptions="Center" 
+                       HorizontalTextAlignment="Center" />
+
+                <Button Text="Login" 
+                        BackgroundColor="{StaticResource LazadaOrange}" 
+                        TextColor="White" 
+                        HeightRequest="50"
+                        CornerRadius="12"
+                        Clicked="OnLoginClicked" />
+                
+                <Button Text="Register" 
+                        BackgroundColor="White" 
+                        TextColor="{StaticResource LazadaOrange}" 
+                        BorderColor="{StaticResource LazadaOrange}"
+                        BorderWidth="2"
+                        HeightRequest="50"
+                        CornerRadius="12"
+                        Clicked="OnRegisterClicked" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

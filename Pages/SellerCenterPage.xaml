@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Lazada_Isagunde.Models"
+             x:Class="Lazada_Isagunde.Pages.SellerCenterPage"
+             BackgroundColor="{StaticResource Gray100}"
+             Title="Seller Center">
+
+    <Grid WidthRequest="360" HorizontalOptions="Center" RowDefinitions="Auto, *">
+        
+        <!-- Tab Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,*,*" BackgroundColor="White" HeightRequest="50">
+            <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                <Label Text="Create" HorizontalOptions="Center" FontAttributes="Bold" x:Name="CreateTabLabel" TextColor="{StaticResource LazadaOrange}" />
+                <BoxView HeightRequest="2" Color="{StaticResource LazadaOrange}" VerticalOptions="End" x:Name="CreateTabIndicator" />
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCreateTabClicked" />
+                </VerticalStackLayout.GestureRecognizers>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                <Label Text="Orders" HorizontalOptions="Center" TextColor="{StaticResource Gray500}" x:Name="OrdersTabLabel" />
+                <BoxView HeightRequest="2" Color="Transparent" VerticalOptions="End" x:Name="OrdersTabIndicator" />
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnOrdersTabClicked" />
+                </VerticalStackLayout.GestureRecognizers>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Column="2" VerticalOptions="Center">
+                <Label Text="Products" HorizontalOptions="Center" TextColor="{StaticResource Gray500}" x:Name="ListingsTabLabel" />
+                <BoxView HeightRequest="2" Color="Transparent" VerticalOptions="End" x:Name="ListingsTabIndicator" />
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnListingsTabClicked" />
+                </VerticalStackLayout.GestureRecognizers>
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Content Area -->
+        <ScrollView Grid.Row="1">
+            <Grid>
+                <!-- Create Section -->
+                <VerticalStackLayout x:Name="CreateSection" Padding="20" Spacing="15" IsVisible="True">
+                    <Label Text="Create New Product" FontSize="20" FontAttributes="Bold" TextColor="Black" />
+                    
+                    <Entry x:Name="ProductNameEntry" Placeholder="Product Name" BackgroundColor="White" HeightRequest="50" TextColor="Black" />
+                    <Editor x:Name="ProductDescriptionEditor" Placeholder="Description" BackgroundColor="White" HeightRequest="100" TextColor="Black" />
+                    <Entry x:Name="ProductPriceEntry" Placeholder="Price" Keyboard="Numeric" BackgroundColor="White" HeightRequest="50" TextColor="Black" />
+                    <Entry x:Name="ProductStockEntry" Placeholder="Stock Quantity" Keyboard="Numeric" BackgroundColor="White" HeightRequest="50" TextColor="Black" />
+                    
+                    <Label Text="Categories" FontAttributes="Bold" Margin="0,10,0,0" TextColor="Black" />
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                        <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="10">
+                            <CheckBox x:Name="ElectronicsCb" Color="{StaticResource LazadaOrange}" />
+                            <Label Text="Electronics" VerticalOptions="Center" TextColor="Black" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="0" Grid.Column="1" Spacing="10">
+                            <CheckBox x:Name="FashionCb" Color="{StaticResource LazadaOrange}" />
+                            <Label Text="Fashion" VerticalOptions="Center" TextColor="Black" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Spacing="10">
+                            <CheckBox x:Name="HomeCb" Color="{StaticResource LazadaOrange}" />
+                            <Label Text="Home" VerticalOptions="Center" TextColor="Black" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Spacing="10">
+                            <CheckBox x:Name="HealthCb" Color="{StaticResource LazadaOrange}" />
+                            <Label Text="Health" VerticalOptions="Center" TextColor="Black" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Spacing="10">
+                            <CheckBox x:Name="ClothesMaleCb" Color="{StaticResource LazadaOrange}" />
+                            <Label Text="Male Clothes" VerticalOptions="Center" TextColor="Black" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="2" Grid.Column="1" Spacing="10">
+                            <CheckBox x:Name="ClothesFemaleCb" Color="{StaticResource LazadaOrange}" />
+                            <Label Text="Female Clothes" VerticalOptions="Center" TextColor="Black" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Grid.Row="3" Grid.Column="0" Spacing="10">
+                            <CheckBox x:Name="KidsCb" Color="{StaticResource LazadaOrange}" />
+                            <Label Text="Kids" VerticalOptions="Center" TextColor="Black" />
+                        </HorizontalStackLayout>
+                    </Grid>
+
+                    <Button Text="Pick Image" 
+                            BackgroundColor="{StaticResource LazadaBlue}" 
+                            TextColor="White" 
+                            Clicked="OnPickImageClicked" />
+                    
+                    <Image x:Name="SelectedImage" HeightRequest="150" Aspect="AspectFill" IsVisible="False" />
+                    
+                    <Button Text="Publish Product" 
+                            BackgroundColor="{StaticResource LazadaOrange}" 
+                            TextColor="White" 
+                            FontAttributes="Bold"
+                            HeightRequest="50"
+                            CornerRadius="25"
+                            Clicked="OnPublishClicked" />
+                </VerticalStackLayout>
+
+                <!-- Orders Section -->
+                <VerticalStackLayout x:Name="OrdersSection" Padding="20" Spacing="15" IsVisible="False">
+                    <Label Text="Recent Orders" FontSize="20" FontAttributes="Bold" TextColor="Black" />
+                    <CollectionView x:Name="OrdersCollection">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Order">
+                                <Frame Margin="0,0,0,10" Padding="15" HasShadow="False" BorderColor="{StaticResource Gray200}" BackgroundColor="White">
+                                    <VerticalStackLayout Spacing="10">
+                                        <Grid ColumnDefinitions="*, Auto">
+                                            <VerticalStackLayout>
+                                                <Label Text="{Binding ReceiverName}" FontAttributes="Bold" TextColor="Black" />
+                                                <Label Text="{Binding Id}" FontSize="10" TextColor="{StaticResource Gray500}" />
+                                            </VerticalStackLayout>
+                                            <Frame Grid.Column="1" BackgroundColor="{Binding StatusColor}" Padding="5,2" CornerRadius="4" HasShadow="False" BorderColor="Transparent">
+                                                <Label Text="{Binding Status}" FontSize="10" TextColor="White" FontAttributes="Bold" />
+                                            </Frame>
+                                        </Grid>
+
+                                        <BoxView HeightRequest="1" Color="{StaticResource Gray100}" />
+
+                                        <Label Text="{Binding ItemsSummary}" FontSize="12" TextColor="{StaticResource Gray600}" />
+                                        <Label Text="{Binding TotalPriceFormatted}" FontAttributes="Bold" FontSize="16" TextColor="{StaticResource LazadaOrange}" />
+
+                                        <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,5,0,0">
+                                            <Button Text="Shipped" 
+                                                    BackgroundColor="{StaticResource LazadaBlue}" 
+                                                    TextColor="White" 
+                                                    FontSize="12" 
+                                                    HeightRequest="35"
+                                                    Padding="0"
+                                                    Clicked="OnUpdateStatusClicked"
+                                                    CommandParameter="Shipped" />
+                                            <Button Grid.Column="1" 
+                                                    Text="Delivered" 
+                                                    BackgroundColor="#2ECC71" 
+                                                    TextColor="White" 
+                                                    FontSize="12" 
+                                                    HeightRequest="35"
+                                                    Padding="0"
+                                                    Clicked="OnUpdateStatusClicked"
+                                                    CommandParameter="Delivered" />
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <!-- Products Section -->
+                <VerticalStackLayout x:Name="ListingsSection" Padding="20" Spacing="15" IsVisible="False">
+                    <Label Text="Your Products" FontSize="20" FontAttributes="Bold" TextColor="Black" />
+                    <CollectionView x:Name="ListingsCollection">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Product">
+                                <Frame Margin="0,0,0,10" Padding="10" HasShadow="False" BorderColor="{StaticResource Gray200}" BackgroundColor="White">
+                                    <Grid ColumnDefinitions="80, *, Auto">
+                                        <Image Source="{Binding ImageUrl}" WidthRequest="70" HeightRequest="70" Aspect="AspectFill" />
+                                        <VerticalStackLayout Grid.Column="1" Margin="10,0" VerticalOptions="Center">
+                                            <Label Text="{Binding Title}" FontAttributes="Bold" MaxLines="1" TextColor="Black" />
+                                            <Label Text="{Binding PriceFormatted}" TextColor="{StaticResource LazadaOrange}" />
+                                        </VerticalStackLayout>
+                                        <Button Grid.Column="2" 
+                                                Text="🗑️" 
+                                                BackgroundColor="Transparent" 
+                                                TextColor="Red" 
+                                                FontSize="20" 
+                                                Clicked="OnDeleteProductClicked" 
+                                                CommandParameter="{Binding .}" />
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Grid>
+        </ScrollView>
+    </Grid>
+</ContentPage>

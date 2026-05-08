@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Lazada_Isagunde.Pages.LoginPage"
+             BackgroundColor="White"
+             Title="Login">
+
+    <Grid WidthRequest="360" HeightRequest="640" HorizontalOptions="Center" VerticalOptions="Center">
+        <VerticalStackLayout Padding="30" Spacing="15" VerticalOptions="Center">
+            <Label Text="Login" 
+                   TextColor="{StaticResource LazadaBlue}" 
+                   FontSize="28" 
+                   FontAttributes="Bold" />
+            
+            <Entry x:Name="EmailEntry"
+                   Placeholder="Email" 
+                   Keyboard="Email" 
+                   BackgroundColor="{StaticResource Gray100}"
+                   TextColor="Black" />
+            
+            <Entry x:Name="PasswordEntry"
+                   Placeholder="Password" 
+                   IsPassword="True" 
+                   BackgroundColor="{StaticResource Gray100}"
+                   TextColor="Black" />
+            
+            <Button Text="Sign In" 
+                    BackgroundColor="{StaticResource LazadaOrange}" 
+                    TextColor="White" 
+                    HeightRequest="50"
+                    CornerRadius="12"
+                    Clicked="OnSignInClicked" />
+
+            <Label Text="Forgot Password?" 
+                   TextColor="{StaticResource LazadaBlue}" 
+                   HorizontalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnForgotPasswordTapped" />
+                </Label.GestureRecognizers>
+            </Label>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

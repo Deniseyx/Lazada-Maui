@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Lazada_Isagunde.Models"
+             x:Class="Lazada_Isagunde.Pages.CartPage"
+             BackgroundColor="{StaticResource Gray100}"
+             Title="My Cart">
+
+    <Grid RowDefinitions="*, Auto">
+        <!-- Cart Items List -->
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="15" Spacing="10">
+                <CollectionView x:Name="CartCollection">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:CartItem">
+                            <Frame Margin="0,0,0,10" Padding="10" HasShadow="False" BackgroundColor="White" BorderColor="{StaticResource Gray200}">
+                                <Grid ColumnDefinitions="Auto, 80, *, Auto" ColumnSpacing="10">
+                                    <CheckBox IsChecked="True" Color="{StaticResource LazadaOrange}" VerticalOptions="Center" />
+                                    
+                                    <Image Grid.Column="1" Source="{Binding ImageUrl}" WidthRequest="80" HeightRequest="80" Aspect="AspectFill" />
+                                    
+                                    <VerticalStackLayout Grid.Column="2" VerticalOptions="Center">
+                                        <Label Text="{Binding Title}" FontAttributes="Bold" MaxLines="2" TextColor="Black" />
+                                        <Label Text="{Binding SellerName}" FontSize="12" TextColor="{StaticResource Gray500}" />
+                                        <Label Text="{Binding PriceFormatted}" TextColor="{StaticResource LazadaOrange}" FontAttributes="Bold" />
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout Grid.Column="3" VerticalOptions="Center" Spacing="5">
+                                        <HorizontalStackLayout Spacing="5">
+                                            <Button Text="-" WidthRequest="30" HeightRequest="30" Padding="0" Clicked="OnDecreaseQuantity" CommandParameter="{Binding .}" BackgroundColor="{StaticResource Gray100}" TextColor="Black" />
+                                            <Label Text="{Binding Quantity}" VerticalOptions="Center" TextColor="Black" />
+                                            <Button Text="+" WidthRequest="30" HeightRequest="30" Padding="0" Clicked="OnIncreaseQuantity" CommandParameter="{Binding .}" BackgroundColor="{StaticResource Gray100}" TextColor="Black" />
+                                        </HorizontalStackLayout>
+                                        <Button Text="Remove" FontSize="10" BackgroundColor="Transparent" TextColor="Red" Padding="0" Clicked="OnRemoveItem" CommandParameter="{Binding .}" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Centered Empty State -->
+        <VerticalStackLayout x:Name="EmptyCartState" 
+                             Grid.Row="0"
+                             HorizontalOptions="Fill" 
+                             VerticalOptions="Center" 
+                             Padding="20" 
+                             Spacing="20" 
+                             IsVisible="False">
+            <Label Text="🛒" FontSize="60" HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+            <Label Text="Your cart is empty" 
+                   FontSize="18" 
+                   TextColor="{StaticResource Gray500}" 
+                   HorizontalOptions="Center" 
+                   HorizontalTextAlignment="Center" />
+            <Button Text="Go Shopping" 
+                    BackgroundColor="{StaticResource LazadaOrange}" 
+                    TextColor="White" 
+                    WidthRequest="200"
+                    HeightRequest="50"
+                    CornerRadius="25"
+                    HorizontalOptions="Center"
+                    Clicked="OnGoShoppingClicked" />
+        </VerticalStackLayout>
+
+        <!-- Bottom Summary -->
+        <Frame Grid.Row="1" BackgroundColor="White" Padding="15" HasShadow="False" CornerRadius="0" BorderColor="{StaticResource Gray200}">
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="15">
+                <VerticalStackLayout VerticalOptions="Center">
+                    <Label Text="Total Price" FontSize="12" TextColor="{StaticResource Gray500}" />
+                    <Label x:Name="TotalPriceLabel" Text="₱0" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource LazadaOrange}" />
+                </VerticalStackLayout>
+                
+                <Button Grid.Column="1"
+                        Text="Checkout"
+                        BackgroundColor="{StaticResource LazadaOrange}"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        WidthRequest="150"
+                        HeightRequest="50"
+                        CornerRadius="25"
+                        Clicked="OnCheckoutClicked" />
+            </Grid>
+        </Frame>
+    </Grid>
+</ContentPage>
