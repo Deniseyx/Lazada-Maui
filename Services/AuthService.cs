@@ -125,8 +125,8 @@ public class AuthService
             return "Email already exists.";
         if (technicalMessage.Contains("WEAK_PASSWORD"))
             return "Password should be at least 6 characters.";
-        if (technicalMessage.Contains("INVALID_EMAIL"))
-            return "Please enter a valid email address.";
+        if (technicalMessage.Contains("INVALID_EMAIL") || technicalMessage.Contains("USER_NOT_FOUND"))
+            return "No user found with this email address.";
         if (technicalMessage.Contains("OPERATION_NOT_ALLOWED"))
             return "Email/Password authentication is not enabled in Firebase.";
         

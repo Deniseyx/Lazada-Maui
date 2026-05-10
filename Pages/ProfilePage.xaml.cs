@@ -69,6 +69,11 @@ public partial class ProfilePage : ContentPage
         await Navigation.PushAsync(new PurchaseHistoryPage());
     }
 
+    private async void OnContactUsClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("ContactUs");
+    }
+
     private void OnLogoutClicked(object sender, EventArgs e)
     {
         _authService.Logout();

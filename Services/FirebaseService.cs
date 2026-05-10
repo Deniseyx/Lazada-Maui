@@ -54,6 +54,14 @@ public class FirebaseService
             .Child("Status")
             .PutAsync($"\"{status}\"");
     }
+
+    public async Task DeleteProductAsync(string productId)
+    {
+        await _client
+            .Child("products")
+            .Child(productId)
+            .DeleteAsync();
+    }
     #endregion
 
     #region Orders

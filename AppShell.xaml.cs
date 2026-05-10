@@ -11,6 +11,7 @@ namespace Lazada_Isagunde
             Routing.RegisterRoute("Profile", typeof(ProfilePage));
             Routing.RegisterRoute("Settings", typeof(SettingsPage));
             Routing.RegisterRoute("SellerCenter", typeof(SellerCenterPage));
+            Routing.RegisterRoute("ContactUs", typeof(ContactUsPage));
         }
     }
 }

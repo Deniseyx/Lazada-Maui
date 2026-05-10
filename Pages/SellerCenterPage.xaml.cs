@@ -178,10 +178,16 @@ public partial class SellerCenterPage : ContentPage
             bool confirm = await DisplayAlert("Delete", $"Are you sure you want to delete {product.Title}?", "Yes", "No");
             if (confirm)
             {
-                // In a real app, you'd have a DeleteProductAsync in FirebaseService
-                // For now, we just remove it locally as a placeholder if the service doesn't support it
-                MyProducts.Remove(product);
-                await DisplayAlert("Deleted", "Product removed.", "OK");
+                try
+                {
+                    await _firebaseService.DeleteProductAsync(product.Id);
+                    MyProducts.Remove(product);
+                    await DisplayAlert("Deleted", "Product removed successfully.", "OK");
+                }
+                catch (Exception ex)
+                {
+                    await DisplayAlert("Error", $"Failed to delete product: {ex.Message}", "OK");
+                }
             }
         }
     }

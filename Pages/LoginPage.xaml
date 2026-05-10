@@ -8,7 +8,7 @@
     <Grid WidthRequest="360" HeightRequest="640" HorizontalOptions="Center" VerticalOptions="Center">
         <VerticalStackLayout Padding="30" Spacing="15" VerticalOptions="Center">
             <Label Text="Login" 
-                   TextColor="{StaticResource LazadaBlue}" 
+                   TextColor="Black"
                    FontSize="28" 
                    FontAttributes="Bold" />
             

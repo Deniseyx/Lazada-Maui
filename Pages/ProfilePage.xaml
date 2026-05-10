@@ -54,8 +54,11 @@
                             <TapGestureRecognizer Tapped="OnMyOrdersClicked" />
                         </Label.GestureRecognizers>
                     </Label>
-                    <Label Text="Account Settings" FontSize="16" HorizontalOptions="Center" TextColor="Black" />
-                    <Label Text="Help Center" FontSize="16" HorizontalOptions="Center" TextColor="Black" />
+                    <Label Text="Contact Us" FontSize="16" HorizontalOptions="Center" TextColor="Black">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnContactUsClicked" />
+                        </Label.GestureRecognizers>
+                    </Label>
                     
                     <Button Text="Log Out" 
                             BackgroundColor="{StaticResource LazadaOrange}" 

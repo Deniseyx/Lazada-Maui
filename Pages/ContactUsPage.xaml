@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Lazada_Isagunde.Pages.ContactUsPage"
+             BackgroundColor="White"
+             Title="Contact Developer">
+
+    <Grid>
+        <!-- Background Gradient/Style -->
+        <VerticalStackLayout Spacing="0">
+            <BoxView HeightRequest="150" Color="{StaticResource LazadaOrange}" />
+            <BoxView HeightRequest="1" Color="{StaticResource Gray200}" />
+        </VerticalStackLayout>
+
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="20" HorizontalOptions="Fill" VerticalOptions="Start">
+                
+                <!-- Profile Image in Circle -->
+                <Frame Margin="0,50,0,0"
+                       Padding="0"
+                       HeightRequest="150"
+                       WidthRequest="150"
+                       CornerRadius="75"
+                       IsClippedToBounds="True"
+                       BorderColor="White"
+                       HorizontalOptions="Center">
+                    <Image Source="den.png"
+                           Aspect="AspectFill"
+                           HeightRequest="150"
+                           WidthRequest="150" />
+                </Frame>
+
+                <!-- Name and Title -->
+                <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
+                    <Label Text="Princess Marie Denise Isagunde"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="Black"
+                           HorizontalTextAlignment="Center" />
+                    <Label Text="Software Developer"
+                           FontSize="16"
+                           TextColor="{StaticResource Gray600}"
+                           HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+
+                <!-- Resume-style Details -->
+                <Frame BackgroundColor="#F8F9FA" BorderColor="#E9ECEF" CornerRadius="15" Padding="20" Margin="0,10,0,0" HasShadow="False">
+                    <VerticalStackLayout Spacing="15" HorizontalOptions="Center">
+                        <Label Text="Contact Information" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource LazadaOrange}" HorizontalTextAlignment="Center" />
+                        
+                        <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto" RowSpacing="15" HorizontalOptions="Center">
+                            <Label Grid.Row="0" Grid.Column="0" Text="📞" FontSize="20" VerticalOptions="Center" Margin="0,0,10,0" />
+                            <Label Grid.Row="0" Grid.Column="1" Text="09915700829" FontSize="16" TextColor="Black" VerticalOptions="Center" />
+
+                            <Label Grid.Row="1" Grid.Column="0" Text="✉️" FontSize="20" VerticalOptions="Center" Margin="0,0,10,0" />
+                            <Label Grid.Row="1" Grid.Column="1" Text="deniseisagunde45@gmail.com" FontSize="16" TextColor="Black" VerticalOptions="Center" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <Frame BackgroundColor="#F8F9FA" BorderColor="#E9ECEF" CornerRadius="15" Padding="20">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Professional Profile" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource LazadaOrange}" />
+                        <Label Text="Passionate developer dedicated to creating intuitive and efficient mobile applications. Specialized in .NET MAUI and cross-platform development."
+                               FontSize="14"
+                               TextColor="Black"
+                               LineBreakMode="WordWrap" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Footer button to go back -->
+                <Button Text="Back to Profile"
+                        BackgroundColor="{StaticResource LazadaOrange}"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        CornerRadius="25"
+                        HeightRequest="50"
+                        WidthRequest="200"
+                        Margin="0,20,0,20"
+                        Clicked="OnBackClicked" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>
