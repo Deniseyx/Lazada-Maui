@@ -1,0 +1,190 @@
+@page "/cart"
+@using Lazada_Isagunde.Blazor.Services
+@using Lazada_Isagunde.Blazor.Models
+@inject FirebaseService FirebaseService
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>My Cart - Lazada</PageTitle>
+
+<div class="cart-container">
+    <h2 class="section-title mb-4">My Cart</h2>
+
+    @if (cartItems == null)
+    {
+        <div class="d-flex justify-content-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading cart...</span>
+            </div>
+        </div>
+    }
+    else if (!cartItems.Any())
+    {
+        <div class="empty-state text-center py-5">
+            <div class="empty-icon">🛒</div>
+            <p class="text-muted">Your cart is empty</p>
+            <button class="btn btn-primary" @onclick='() => Navigation.NavigateTo("/dashboard")'>Go Shopping</button>
+        </div>
+    }
+    else
+    {
+        <div class="cart-content">
+            <div class="cart-items-list">
+                @foreach (var item in cartItems)
+                {
+                    <div class="cart-item-card mb-3 p-3">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "images/placeholder.png" : item.ImageUrl)" class="item-image" />
+                            </div>
+                            <div class="col">
+                                <h5 class="item-title">@item.Title</h5>
+                                <p class="item-price">@item.PriceFormatted</p>
+                            </div>
+                            <div class="col-auto">
+                                <div class="quantity-control d-flex align-items-center">
+                                    <button class="btn btn-sm btn-outline-secondary" @onclick="() => UpdateQuantity(item, -1)">-</button>
+                                    <span class="mx-3 fw-bold">@item.Quantity</span>
+                                    <button class="btn btn-sm btn-outline-secondary" @onclick="() => UpdateQuantity(item, 1)">+</button>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-link text-danger" @onclick="() => RemoveItem(item.ProductId)">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="cart-summary-card p-4 mt-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="total-label">Total: </span>
+                        <span class="total-price">₱@totalPrice.ToString("N0")</span>
+                    </div>
+                    <button class="btn btn-primary btn-lg px-5" @onclick="Checkout" disabled="@isProcessing">
+                        @if (isProcessing)
+                        {
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        }
+                        else
+                        {
+                            <span>Check Out</span>
+                        }
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<CartItem>? cartItems;
+    private double totalPrice => cartItems?.Sum(i => i.Price * i.Quantity) ?? 0;
+    private bool isProcessing = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsLoggedIn)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LoadCart();
+    }
+
+    private async Task LoadCart()
+    {
+        cartItems = await FirebaseService.GetCartItemsAsync(AuthService.UserId!);
+    }
+
+    private async Task UpdateQuantity(CartItem item, int delta)
+    {
+        item.Quantity += delta;
+        if (item.Quantity < 1) item.Quantity = 1;
+        
+        await FirebaseService.AddToCartAsync(AuthService.UserId!, item);
+        StateHasChanged();
+    }
+
+    private async Task RemoveItem(string productId)
+    {
+        await FirebaseService.RemoveFromCartAsync(AuthService.UserId!, productId);
+        await LoadCart();
+    }
+
+    private async Task Checkout()
+    {
+        if (cartItems == null || !cartItems.Any()) return;
+
+        isProcessing = true;
+        
+        var order = new Order
+        {
+            BuyerId = AuthService.UserId!,
+            ReceiverName = AuthService.UserDisplayName ?? AuthService.UserEmail ?? "User",
+            Items = cartItems,
+            TotalPrice = totalPrice,
+            Status = "Pending",
+            OrderDate = DateTime.UtcNow,
+            SellerId = cartItems.First().SellerId,
+            SellerName = cartItems.First().SellerName,
+            ShippingAddress = "" // Should ideally come from profile
+        };
+
+        await FirebaseService.PlaceOrderAsync(order);
+        await FirebaseService.ClearCartAsync(AuthService.UserId!);
+        
+        Navigation.NavigateTo("/orders");
+        isProcessing = false;
+    }
+}
+
+<style>
+    .cart-container {
+        padding: 40px 0;
+    }
+    .cart-item-card {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #eee;
+    }
+    .item-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+    .item-title {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    .item-price {
+        color: var(--lazada-orange);
+        font-weight: bold;
+    }
+    .cart-summary-card {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        position: sticky;
+        bottom: 20px;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+    .total-price {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--lazada-orange);
+    }
+    .btn-primary {
+        background-color: var(--lazada-orange);
+        border-color: var(--lazada-orange);
+        border-radius: 25px;
+    }
+    .empty-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+    }
+</style>

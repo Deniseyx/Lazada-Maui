@@ -1,0 +1,158 @@
+@page "/profile"
+@using Lazada_Isagunde.Blazor.Services
+@using Lazada_Isagunde.Blazor.Models
+@inject FirebaseService FirebaseService
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>My Account - Lazada</PageTitle>
+
+<div class="profile-container">
+    <div class="profile-header mb-4 p-4 text-white">
+        <div class="d-flex align-items-center">
+            <div class="profile-avatar">👤</div>
+            <div class="ms-4">
+                <h2 class="mb-0">@(profile?.FullName ?? AuthService.UserDisplayName ?? "User")</h2>
+                <p class="mb-0 opacity-75">@AuthService.UserEmail</p>
+                @if (AuthService.IsAdmin)
+                {
+                    <span class="badge bg-light text-primary mt-2">Admin</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="profile-card p-4 mb-4">
+                <h4 class="mb-4">Shipping Information</h4>
+                
+                @if (isSuccess)
+                {
+                    <div class="alert alert-success">Profile updated successfully!</div>
+                }
+
+                <div class="mb-3">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-control" @bind="profile!.FullName" placeholder="Enter your full name" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" class="form-control" @bind="profile.PhoneNumber" placeholder="Enter phone number" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Shipping Address</label>
+                    <textarea class="form-control" @bind="profile.ShippingAddress" rows="3" placeholder="Enter full address"></textarea>
+                </div>
+
+                <button class="btn btn-primary px-5" @onclick="SaveProfile" disabled="@isProcessing">
+                    @if (isProcessing)
+                    {
+                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                    }
+                    else
+                    {
+                        <span>Save Information</span>
+                    }
+                </button>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="list-group mb-4">
+                <a href="/orders" class="list-group-item list-group-item-action py-3">
+                    <span class="me-2">📦</span> My Orders
+                </a>
+                <a href="javascript:void(0)" class="list-group-item list-group-item-action py-3" @onclick="GoToSellerCenter">
+                    <span class="me-2">🏪</span> Seller Center
+                </a>
+                @if (AuthService.IsAdmin)
+                {
+                    <a href="/admin" class="list-group-item list-group-item-action py-3 text-primary fw-bold">
+                        <span class="me-2">🛡️</span> Admin Dashboard
+                    </a>
+                }
+            </div>
+
+            <button class="btn btn-outline-danger w-100 py-3" @onclick="Logout">Log Out</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private UserProfile? profile;
+    private bool isProcessing = false;
+    private bool isSuccess = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsLoggedIn)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        profile = await FirebaseService.GetUserProfileAsync(AuthService.UserId!);
+    }
+
+    private async Task SaveProfile()
+    {
+        if (profile == null) return;
+
+        isProcessing = true;
+        isSuccess = false;
+
+        await FirebaseService.SaveUserProfileAsync(profile);
+        
+        isSuccess = true;
+        isProcessing = false;
+        StateHasChanged();
+    }
+
+    private void GoToSellerCenter()
+    {
+        // Placeholder for Seller Center
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.Logout();
+        Navigation.NavigateTo("/");
+    }
+}
+
+<style>
+    .profile-container {
+        padding: 40px 0;
+    }
+    .profile-header {
+        background-color: var(--lazada-orange);
+        border-radius: 8px;
+    }
+    .profile-avatar {
+        font-size: 48px;
+        background: white;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+    .profile-card {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #eee;
+    }
+    .form-control {
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+    }
+    .btn-primary {
+        background-color: var(--lazada-orange);
+        border-color: var(--lazada-orange);
+        border-radius: 25px;
+    }
+</style>

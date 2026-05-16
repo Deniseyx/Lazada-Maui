@@ -1,0 +1,122 @@
+@page "/admin"
+@using Lazada_Isagunde.Blazor.Services
+@using Lazada_Isagunde.Blazor.Models
+@inject FirebaseService FirebaseService
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>Admin Dashboard - Lazada</PageTitle>
+
+<div class="admin-container">
+    <div class="admin-header mb-4 p-4 text-white d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="mb-0">ADMIN CENTER</h2>
+            <p class="mb-0 opacity-75">Pending Approvals</p>
+        </div>
+        <button class="btn btn-outline-light" @onclick="Logout">Logout</button>
+    </div>
+
+    @if (!AuthService.IsAdmin)
+    {
+        <div class="alert alert-danger">Access Denied. Admins only.</div>
+    }
+    else if (pendingProducts == null)
+    {
+        <div class="d-flex justify-content-center my-5">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+    }
+    else if (!pendingProducts.Any())
+    {
+        <div class="text-center py-5">
+            <div class="empty-icon">📦</div>
+            <p class="text-muted">No pending products</p>
+        </div>
+    }
+    else
+    {
+        <div class="admin-list">
+            @foreach (var product in pendingProducts)
+            {
+                <div class="admin-item-card mb-3 p-3">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <img src="@(string.IsNullOrEmpty(product.ImageUrl) ? "images/placeholder.png" : product.ImageUrl)" class="item-thumb" />
+                        </div>
+                        <div class="col">
+                            <h5 class="mb-1">@product.Title</h5>
+                            <div class="text-muted small mb-1">Seller: @product.SellerName</div>
+                            <div class="fw-bold text-orange">@product.PriceFormatted</div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-success btn-sm" @onclick='() => UpdateStatus(product.Id!, "Approved")'>Approve</button>
+                                <button class="btn btn-danger btn-sm" @onclick='() => UpdateStatus(product.Id!, "Rejected")'>Reject</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<Product>? pendingProducts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsLoggedIn || !AuthService.IsAdmin)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LoadPending();
+    }
+
+    private async Task LoadPending()
+    {
+        pendingProducts = await FirebaseService.GetProductsAsync("Pending");
+    }
+
+    private async Task UpdateStatus(string productId, string status)
+    {
+        await FirebaseService.UpdateProductStatusAsync(productId, status);
+        await LoadPending();
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.Logout();
+        Navigation.NavigateTo("/login");
+    }
+}
+
+<style>
+    .admin-container {
+        padding: 40px 0;
+    }
+    .admin-header {
+        background-color: var(--lazada-blue);
+        border-radius: 8px;
+    }
+    .admin-item-card {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #eee;
+    }
+    .item-thumb {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+    .text-orange {
+        color: var(--lazada-orange);
+    }
+    .empty-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+    }
+</style>
