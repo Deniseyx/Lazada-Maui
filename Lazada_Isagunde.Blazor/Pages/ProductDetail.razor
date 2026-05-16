@@ -1,0 +1,214 @@
+@page "/product/{Id}"
+@using Lazada_Isagunde.Blazor.Services
+@using Lazada_Isagunde.Blazor.Models
+@inject FirebaseService FirebaseService
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>@(product?.Title ?? "Product Details") - Lazada</PageTitle>
+
+@if (product == null)
+{
+    <div class="d-flex justify-content-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else
+{
+    <div class="product-detail-container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="product-image-container">
+                    <img src="@(string.IsNullOrEmpty(product.ImageUrl) ? "images/placeholder.png" : product.ImageUrl)" class="main-image" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="product-meta-card">
+                    <h1 class="product-title">@product.Title</h1>
+                    
+                    <div class="price-rating-row d-flex justify-content-between align-items-center mb-4">
+                        <span class="product-price">@product.PriceFormatted</span>
+                        <div class="rating-display">
+                            <span class="rating-value">@product.Rating.ToString("F1")</span>
+                            <span class="star-icon text-warning">★</span>
+                        </div>
+                    </div>
+
+                    <div class="seller-card mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="seller-avatar">🏪</div>
+                            <div class="ms-3">
+                                <div class="seller-name">@product.SellerName</div>
+                                <a href="javascript:void(0)" class="visit-store">Visit Store</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stock-info mb-4">
+                        <span class="label">Stock: </span>
+                        <span class="value">@product.Stock left</span>
+                    </div>
+
+                    <div class="action-buttons d-flex gap-3 mb-5">
+                        <button class="btn btn-outline-primary btn-lg flex-grow-1" @onclick="AddToCart">Add to Cart</button>
+                        <button class="btn btn-primary btn-lg flex-grow-1" @onclick="BuyNow">Buy Now</button>
+                    </div>
+
+                    <div class="description-section">
+                        <h3 class="section-subtitle">Description</h3>
+                        <p class="product-description">@product.Description</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-5" />
+
+        <div class="reviews-section">
+            <h3 class="section-subtitle">Customer Reviews</h3>
+            @if (reviews == null)
+            {
+                <p>Loading reviews...</p>
+            }
+            else if (!reviews.Any())
+            {
+                <p class="text-muted">No reviews yet.</p>
+            }
+            else
+            {
+                @foreach (var review in reviews)
+                {
+                    <div class="review-item mb-3 p-3 border-bottom">
+                        <div class="d-flex justify-content-between">
+                            <strong>@review.BuyerName</strong>
+                            <span class="text-warning">@review.Rating ★</span>
+                        </div>
+                        <p class="mb-1">@review.Comment</p>
+                        <small class="text-muted">@review.Timestamp.ToString("MMM dd, yyyy")</small>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public string Id { get; set; } = "";
+    private Product? product;
+    private List<Review>? reviews;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsLoggedIn)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        product = await FirebaseService.GetProductByIdAsync(Id);
+        if (product != null)
+        {
+            reviews = await FirebaseService.GetReviewsForProductAsync(Id);
+        }
+    }
+
+    private async Task AddToCart()
+    {
+        if (product == null) return;
+        
+        var cartItem = new CartItem
+        {
+            ProductId = product.Id ?? "",
+            Title = product.Title,
+            Price = product.Price,
+            ImageUrl = product.ImageUrl,
+            Quantity = 1,
+            SellerId = product.SellerId
+        };
+
+        await FirebaseService.AddToCartAsync(AuthService.UserId!, cartItem);
+        // Navigate to Cart
+        Navigation.NavigateTo("/cart");
+    }
+
+    private async Task BuyNow()
+    {
+        // Simple redirect to cart for now
+        await AddToCart();
+    }
+}
+
+<style>
+    .product-detail-container {
+        padding: 40px 0;
+    }
+    .product-image-container {
+        background: white;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #eee;
+    }
+    .main-image {
+        width: 100%;
+        border-radius: 4px;
+    }
+    .product-title {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    .product-price {
+        font-size: 32px;
+        font-weight: bold;
+        color: var(--lazada-orange);
+    }
+    .seller-card {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+    }
+    .seller-avatar {
+        font-size: 24px;
+        background: var(--lazada-purple);
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+    .seller-name {
+        font-weight: bold;
+    }
+    .visit-store {
+        color: var(--lazada-purple);
+        font-size: 14px;
+        text-decoration: none;
+    }
+    .section-subtitle {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+    .product-description {
+        white-space: pre-line;
+        color: #555;
+        line-height: 1.6;
+    }
+    .btn-primary {
+        background-color: var(--lazada-orange);
+        border-color: var(--lazada-orange);
+        border-radius: 25px;
+        height: 50px;
+        font-weight: bold;
+    }
+    .btn-outline-primary {
+        color: var(--lazada-purple);
+        border-color: var(--lazada-purple);
+        border-radius: 25px;
+        height: 50px;
+        font-weight: bold;
+    }
+</style>

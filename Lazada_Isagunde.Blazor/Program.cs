@@ -12,6 +12,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<FirebaseService>();
 
 var host = builder.Build();
 

@@ -1,28 +1,131 @@
-﻿@page "/dashboard"
+@page "/dashboard"
 @using Lazada_Isagunde.Blazor.Services
+@using Lazada_Isagunde.Blazor.Models
+@inject FirebaseService FirebaseService
 @inject AuthService AuthService
 @inject NavigationManager Navigation
 
-<PageTitle>Dashboard - Lazada</PageTitle>
+<PageTitle>Lazada - Just For You</PageTitle>
 
-<div class="dashboard-header mb-4">
-    <h1>Welcome back, @(AuthService.UserDisplayName ?? AuthService.UserEmail ?? "User")!</h1>
-</div>
-
-<div class="row">
-    <div class="col-md-12">
-        <div class="alert alert-info">
-            Your Dashboard is being ported. You are successfully logged in!
-        </div>
+<div class="dashboard-container">
+    <div class="section-header mb-4">
+        <h2 class="section-title">Just For You</h2>
     </div>
+
+    @if (products == null)
+    {
+        <div class="d-flex justify-content-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading products...</span>
+            </div>
+        </div>
+    }
+    else if (!products.Any())
+    {
+        <div class="alert alert-info">No products found.</div>
+    }
+    else
+    {
+        <div class="product-grid">
+            @foreach (var product in products)
+            {
+                <div class="product-card" @onclick="() => NavigateToDetail(product.Id)">
+                    <div class="product-image-wrapper">
+                        <img src="@(string.IsNullOrEmpty(product.ImageUrl) ? "images/placeholder.png" : product.ImageUrl)" class="product-image" alt="@product.Title" />
+                    </div>
+                    <div class="product-info">
+                        <h5 class="product-title">@product.Title</h5>
+                        <p class="product-price">@product.PriceFormatted</p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 </div>
 
 @code {
-    protected override void OnInitialized()
+    private List<Product>? products;
+
+    protected override async Task OnInitializedAsync()
     {
         if (!AuthService.IsLoggedIn)
         {
             Navigation.NavigateTo("/login");
+            return;
+        }
+
+        products = await FirebaseService.GetProductsAsync("Approved");
+    }
+
+    private void NavigateToDetail(string? id)
+    {
+        if (!string.IsNullOrEmpty(id))
+        {
+            Navigation.NavigateTo($"/product/{id}");
         }
     }
 }
+
+<style>
+    .dashboard-container {
+        padding: 20px 0;
+    }
+    .section-title {
+        font-size: 20px;
+        font-weight: bold;
+        color: #000;
+    }
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    .product-card {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        border: 1px solid #eee;
+    }
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .product-image-wrapper {
+        aspect-ratio: 1/1;
+        overflow: hidden;
+        background-color: #f8f9fa;
+    }
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .product-info {
+        padding: 12px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    .product-title {
+        font-size: 14px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        height: 38px;
+    }
+    .product-price {
+        color: var(--lazada-orange);
+        font-size: 16px;
+        font-weight: bold;
+        margin-top: auto;
+    }
+</style>
