@@ -1,0 +1,28 @@
+﻿@page "/dashboard"
+@using Lazada_Isagunde.Blazor.Services
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>Dashboard - Lazada</PageTitle>
+
+<div class="dashboard-header mb-4">
+    <h1>Welcome back, @(AuthService.UserDisplayName ?? AuthService.UserEmail ?? "User")!</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="alert alert-info">
+            Your Dashboard is being ported. You are successfully logged in!
+        </div>
+    </div>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        if (!AuthService.IsLoggedIn)
+        {
+            Navigation.NavigateTo("/login");
+        }
+    }
+}

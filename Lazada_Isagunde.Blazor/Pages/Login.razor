@@ -1,0 +1,108 @@
+@page "/login"
+@using Lazada_Isagunde.Blazor.Services
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<div class="auth-container">
+    <div class="auth-card">
+        <h2 class="auth-title">Login</h2>
+        
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger">@errorMessage</div>
+        }
+
+        <div class="form-group mb-3">
+            <input type="email" class="form-control" placeholder="Email" @bind="email" />
+        </div>
+        
+        <div class="form-group mb-4">
+            <input type="password" class="form-control" placeholder="Password" @bind="password" />
+        </div>
+
+        <button class="btn btn-primary w-100 mb-3" @onclick="HandleLogin" disabled="@isProcessing">
+            @if (isProcessing)
+            {
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span> Signing in...</span>
+            }
+            else
+            {
+                <span>Sign In</span>
+            }
+        </button>
+
+        <div class="text-center">
+            <a href="javascript:void(0)" class="forgot-password">Forgot Password?</a>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string email = "";
+    private string password = "";
+    private string errorMessage = "";
+    private bool isProcessing = false;
+
+    private async Task HandleLogin()
+    {
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+        {
+            errorMessage = "Please enter email and password.";
+            return;
+        }
+
+        isProcessing = true;
+        errorMessage = "";
+
+        var result = await AuthService.LoginUser(email, password);
+        if (result.Success)
+        {
+            Navigation.NavigateTo("/dashboard");
+        }
+        else
+        {
+            errorMessage = result.ErrorMessage;
+        }
+
+        isProcessing = false;
+    }
+}
+
+<style>
+    .auth-container {
+        height: calc(100vh - 100px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #fff;
+    }
+    .auth-card {
+        width: 100%;
+        max-width: 400px;
+        padding: 30px;
+    }
+    .auth-title {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 25px;
+        color: #000;
+    }
+    .form-control {
+        background-color: #f8f9fa;
+        border: none;
+        height: 50px;
+        padding: 10px 15px;
+    }
+    .btn-primary {
+        background-color: var(--lazada-orange);
+        border-color: var(--lazada-orange);
+        border-radius: 12px;
+        height: 50px;
+        font-weight: bold;
+    }
+    .forgot-password {
+        color: var(--lazada-purple);
+        text-decoration: none;
+    }
+</style>

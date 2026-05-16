@@ -1,0 +1,63 @@
+@page "/"
+@inject NavigationManager Navigation
+
+<div class="landing-container">
+    <div class="landing-content">
+        <h1 class="welcome-text">Welcome to Lazada</h1>
+        <p class="tagline">The best place to find everything you need.</p>
+        
+        <div class="button-group">
+            <button class="btn btn-primary btn-lg w-100 mb-3" @onclick='() => Navigation.NavigateTo("/login")'>Login</button>
+            <button class="btn btn-outline-primary btn-lg w-100" @onclick='() => Navigation.NavigateTo("/register")'>Register</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .landing-container {
+        height: calc(100vh - 100px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #fff;
+    }
+    .landing-content {
+        width: 100%;
+        max-width: 400px;
+        padding: 30px;
+        text-align: center;
+    }
+    .welcome-text {
+        color: var(--lazada-purple);
+        font-size: 32px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    .tagline {
+        color: #6c757d;
+        font-size: 16px;
+        margin-bottom: 40px;
+    }
+    .btn-primary {
+        background-color: var(--lazada-orange);
+        border-color: var(--lazada-orange);
+        border-radius: 12px;
+        height: 50px;
+    }
+    .btn-primary:hover {
+        background-color: #e05d1a;
+        border-color: #e05d1a;
+    }
+    .btn-outline-primary {
+        color: var(--lazada-orange);
+        border-color: var(--lazada-orange);
+        border-radius: 12px;
+        height: 50px;
+        background-color: transparent;
+    }
+    .btn-outline-primary:hover {
+        background-color: #fff5f0;
+        color: var(--lazada-orange);
+        border-color: var(--lazada-orange);
+    }
+</style>
