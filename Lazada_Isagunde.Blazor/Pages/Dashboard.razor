@@ -8,6 +8,10 @@
 <PageTitle>Lazada - Just For You</PageTitle>
 
 <div class="dashboard-container">
+    <div class="search-bar-container mb-4 d-md-none">
+        <input type="text" class="form-control" placeholder="Search products..." @bind="searchQuery" @bind:event="oninput" />
+    </div>
+
     <div class="section-header mb-4">
         <h2 class="section-title">Just For You</h2>
     </div>
@@ -20,14 +24,14 @@
             </div>
         </div>
     }
-    else if (!products.Any())
+    else if (!FilteredProducts.Any())
     {
-        <div class="alert alert-info">No products found.</div>
+        <div class="alert alert-info">No products found matching "@searchQuery".</div>
     }
     else
     {
         <div class="product-grid">
-            @foreach (var product in products)
+            @foreach (var product in FilteredProducts)
             {
                 <div class="product-card" @onclick="() => NavigateToDetail(product.Id)">
                     <div class="product-image-wrapper">
@@ -45,6 +49,12 @@
 
 @code {
     private List<Product>? products;
+    private string searchQuery = "";
+
+    private IEnumerable<Product> FilteredProducts => 
+        string.IsNullOrWhiteSpace(searchQuery) 
+            ? products ?? new() 
+            : (products ?? new()).Where(p => p.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
 
     protected override async Task OnInitializedAsync()
     {
