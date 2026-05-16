@@ -19,6 +19,5 @@ public class Conversation
         return currentUserId == SellerId ? BuyerName : SellerName;
     }
 
-    public string DisplayName => GetOtherParticipantName(AuthService.UserId ?? "");
     public string DateFormatted => LastMessageDate.ToString("MMM dd");
 }
