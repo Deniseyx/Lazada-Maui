@@ -135,8 +135,21 @@ else
 
     private async Task BuyNow()
     {
-        // Simple redirect to cart for now
-        await AddToCart();
+        // Add to cart then go to checkout
+        if (product == null) return;
+        
+        var cartItem = new CartItem
+        {
+            ProductId = product.Id ?? "",
+            Title = product.Title,
+            Price = product.Price,
+            ImageUrl = product.ImageUrl,
+            Quantity = 1,
+            SellerId = product.SellerId
+        };
+
+        await FirebaseService.AddToCartAsync(AuthService.UserId!, cartItem);
+        Navigation.NavigateTo("/checkout");
     }
 }
 

@@ -65,8 +65,14 @@
                 <a href="/orders" class="list-group-item list-group-item-action py-3">
                     <span class="me-2">📦</span> My Orders
                 </a>
-                <a href="javascript:void(0)" class="list-group-item list-group-item-action py-3" @onclick="GoToSellerCenter">
+                <a href="/seller-center" class="list-group-item list-group-item-action py-3">
                     <span class="me-2">🏪</span> Seller Center
+                </a>
+                <a href="/contact" class="list-group-item list-group-item-action py-3">
+                    <span class="me-2">📞</span> Contact Us
+                </a>
+                <a href="/settings" class="list-group-item list-group-item-action py-3">
+                    <span class="me-2">⚙️</span> Settings
                 </a>
                 @if (AuthService.IsAdmin)
                 {

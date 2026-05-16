@@ -1,0 +1,156 @@
+@page "/submit-review/{OrderId}"
+@using Lazada_Isagunde.Blazor.Services
+@using Lazada_Isagunde.Blazor.Models
+@inject FirebaseService FirebaseService
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>Write a Review - Lazada</PageTitle>
+
+<div class="review-container">
+    <div class="review-card p-4 text-center">
+        <h2 class="mb-4">How was your purchase?</h2>
+        
+        @if (order == null)
+        {
+            <div class="spinner-border text-primary" role="status"></div>
+        }
+        else
+        {
+            <div class="product-info mb-4">
+                <h4 class="fw-bold">@order.ItemsSummary</h4>
+                <p class="text-muted">Order ID: @order.Id</p>
+            </div>
+
+            <hr />
+
+            <div class="rating-section mb-4">
+                <h5 class="fw-bold mb-3">Rate this product</h5>
+                <div class="stars d-flex justify-content-center gap-2 mb-2">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        int starValue = i;
+                        <span class="star @(rating >= starValue ? "active" : "")" @onclick="() => rating = starValue">★</span>
+                    }
+                </div>
+                <p class="rating-text">@GetRatingText()</p>
+            </div>
+
+            <div class="comment-section mb-4 text-start">
+                <textarea class="form-control" rows="5" placeholder="Share your experience with this product..." @bind="comment"></textarea>
+            </div>
+
+            <button class="btn btn-primary w-100 py-3 fw-bold" @onclick="HandleSubmit" disabled="@(rating == 0 || isProcessing)">
+                @if (isProcessing)
+                {
+                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                }
+                else
+                {
+                    <span>Submit Review</span>
+                }
+            </button>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string OrderId { get; set; } = "";
+    private Order? order;
+    private int rating = 0;
+    private string comment = "";
+    private bool isProcessing = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsLoggedIn)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        var orders = await FirebaseService.GetUserOrdersAsync(AuthService.UserId!);
+        order = orders.FirstOrDefault(o => o.Id == OrderId);
+
+        if (order == null)
+        {
+            Navigation.NavigateTo("/orders");
+        }
+    }
+
+    private string GetRatingText()
+    {
+        return rating switch
+        {
+            1 => "Terrible",
+            2 => "Poor",
+            3 => "Fair",
+            4 => "Good",
+            5 => "Excellent",
+            _ => "Tap a star to rate"
+        };
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (order == null || rating == 0) return;
+
+        isProcessing = true;
+
+        foreach (var item in order.Items)
+        {
+            var reviewModel = new Lazada_Isagunde.Blazor.Models.Review
+            {
+                ProductId = item.ProductId,
+                BuyerId = AuthService.UserId!,
+                BuyerName = AuthService.UserDisplayName ?? AuthService.UserEmail ?? "User",
+                Rating = rating,
+                Comment = comment,
+                Timestamp = DateTime.UtcNow
+            };
+
+            await FirebaseService.SubmitReviewAsync(reviewModel);
+        }
+
+        await FirebaseService.UpdateOrderReviewStatusAsync(order.Id, true);
+
+        Navigation.NavigateTo("/orders");
+        isProcessing = false;
+    }
+}
+
+<style>
+    .review-container {
+        padding: 40px 0;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .review-card {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #eee;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    .star {
+        font-size: 40px;
+        color: #ddd;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .star.active {
+        color: #ffc107;
+    }
+    .rating-text {
+        color: #6c757d;
+        font-weight: 500;
+    }
+    .btn-primary {
+        background-color: var(--lazada-orange);
+        border-color: var(--lazada-orange);
+        border-radius: 25px;
+    }
+    .form-control {
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+    }
+</style>

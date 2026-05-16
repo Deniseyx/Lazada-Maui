@@ -55,9 +55,15 @@
 
                     <div class="d-flex justify-content-between align-items-center">
                         <small class="text-muted">@order.OrderDate.ToString("MMM dd, yyyy HH:mm")</small>
-                        <div>
-                            <span class="text-muted me-2">Total Payment:</span>
-                            <span class="order-total">@order.TotalPriceFormatted</span>
+                        <div class="d-flex align-items-center">
+                            @if (order.ShowReviewButton)
+                            {
+                                <button class="btn btn-sm btn-outline-primary me-3" @onclick='() => Navigation.NavigateTo($"/submit-review/{order.Id}")'>Review</button>
+                            }
+                            <div>
+                                <span class="text-muted me-2">Total Payment:</span>
+                                <span class="order-total">@order.TotalPriceFormatted</span>
+                            </div>
                         </div>
                     </div>
                 </div>

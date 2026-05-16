@@ -1,0 +1,233 @@
+@page "/checkout"
+@using Lazada_Isagunde.Blazor.Services
+@using Lazada_Isagunde.Blazor.Models
+@inject FirebaseService FirebaseService
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>Checkout - Lazada</PageTitle>
+
+<div class="checkout-container">
+    <h2 class="section-title mb-4">Checkout</h2>
+
+    @if (cartItems == null)
+    {
+        <div class="d-flex justify-content-center my-5">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Shipping Address -->
+                <div class="checkout-card p-4 mb-4">
+                    <h4 class="card-subtitle mb-3">Shipping Address</h4>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" @bind="useSavedAddress" id="useSavedAddress">
+                        <label class="form-check-label" for="useSavedAddress">
+                            Use saved shipping details
+                        </label>
+                    </div>
+
+                    @if (!useSavedAddress)
+                    {
+                        <div class="custom-address-form">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Receiver Name" @bind="customName" />
+                            </div>
+                            <div class="mb-3">
+                                <input type="tel" class="form-control" placeholder="Phone Number" @bind="customPhone" />
+                            </div>
+                            <div class="mb-3">
+                                <textarea class="form-control" placeholder="Full Address" @bind="customAddress" rows="3"></textarea>
+                            </div>
+                        </div>
+                    }
+                    else if (userProfile != null)
+                    {
+                        <div class="saved-address-display p-3 bg-light rounded">
+                            <div class="fw-bold">@userProfile.FullName</div>
+                            <div class="text-muted">@userProfile.PhoneNumber</div>
+                            <div class="text-muted">@userProfile.ShippingAddress</div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Order Summary -->
+                <div class="checkout-card p-4 mb-4">
+                    <h4 class="card-subtitle mb-3">Order Summary</h4>
+                    <div class="checkout-items">
+                        @foreach (var item in cartItems)
+                        {
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "images/placeholder.png" : item.ImageUrl)" class="item-thumb" />
+                                <div class="ms-3 flex-grow-1">
+                                    <div class="item-title text-truncate" style="max-width: 300px;">@item.Title</div>
+                                    <div class="item-qty text-muted">x@item.Quantity</div>
+                                </div>
+                                <div class="item-price fw-bold">@item.TotalPriceFormatted</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="checkout-card p-4 mb-4">
+                    <h4 class="card-subtitle mb-3">Payment Method</h4>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="payment" id="cod" value="COD" checked @onchange='() => paymentMethod = "COD"'>
+                        <label class="form-check-label" for="cod">Cash on Delivery (COD)</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="payment" id="gcash" value="GCash" @onchange='() => paymentMethod = "GCash"'>
+                        <label class="form-check-label" for="gcash">GCash</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="payment" id="card" value="Card" @onchange='() => paymentMethod = "Card"'>
+                        <label class="form-check-label" for="card">Credit/Debit Card</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- Price Breakdown -->
+                <div class="checkout-card p-4 sticky-top" style="top: 100px;">
+                    <h4 class="card-subtitle mb-4">Payment Details</h4>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Merchandise Subtotal</span>
+                        <span>₱@subtotal.ToString("N0")</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Shipping Fee</span>
+                        <span>₱@shippingFee.ToString("N0")</span>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="fw-bold fs-5">Total Payment</span>
+                        <span class="fw-bold fs-5 text-orange">₱@totalPayment.ToString("N0")</span>
+                    </div>
+
+                    <button class="btn btn-primary w-100 py-3 fw-bold" @onclick="PlaceOrder" disabled="@isProcessing">
+                        @if (isProcessing)
+                        {
+                            <span class="spinner-border spinner-border-sm" role="status"></span>
+                        }
+                        else
+                        {
+                            <span>Place Order</span>
+                        }
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<CartItem>? cartItems;
+    private UserProfile? userProfile;
+    private bool useSavedAddress = true;
+    private string customName = "";
+    private string customPhone = "";
+    private string customAddress = "";
+    private string paymentMethod = "COD";
+    private bool isProcessing = false;
+
+    private double subtotal => cartItems?.Sum(i => i.Price * i.Quantity) ?? 0;
+    private double shippingFee = 80;
+    private double totalPayment => subtotal + shippingFee;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsLoggedIn)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        cartItems = await FirebaseService.GetCartItemsAsync(AuthService.UserId!);
+        if (cartItems == null || !cartItems.Any())
+        {
+            Navigation.NavigateTo("/cart");
+            return;
+        }
+
+        userProfile = await FirebaseService.GetUserProfileAsync(AuthService.UserId!);
+    }
+
+    private async Task PlaceOrder()
+    {
+        if (cartItems == null || !cartItems.Any()) return;
+
+        isProcessing = true;
+
+        string receiverName = useSavedAddress ? (userProfile?.FullName ?? AuthService.UserDisplayName ?? "User") : customName;
+        string receiverPhone = useSavedAddress ? (userProfile?.PhoneNumber ?? "") : customPhone;
+        string shippingAddress = useSavedAddress ? (userProfile?.ShippingAddress ?? "") : customAddress;
+
+        if (string.IsNullOrEmpty(receiverName) || string.IsNullOrEmpty(shippingAddress))
+        {
+            // Simple validation
+            isProcessing = false;
+            return;
+        }
+
+        var order = new Order
+        {
+            BuyerId = AuthService.UserId!,
+            ReceiverName = receiverName,
+            ReceiverPhone = receiverPhone,
+            ShippingAddress = shippingAddress,
+            Items = cartItems,
+            Subtotal = subtotal,
+            ShippingFee = shippingFee,
+            TotalPrice = totalPayment,
+            Status = "Pending",
+            OrderDate = DateTime.UtcNow,
+            PaymentMethod = paymentMethod,
+            SellerId = cartItems.First().SellerId,
+            SellerName = cartItems.First().SellerName
+        };
+
+        await FirebaseService.PlaceOrderAsync(order);
+        await FirebaseService.ClearCartAsync(AuthService.UserId!);
+
+        Navigation.NavigateTo("/orders");
+        isProcessing = false;
+    }
+}
+
+<style>
+    .checkout-container {
+        padding: 40px 0;
+    }
+    .checkout-card {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #eee;
+    }
+    .card-subtitle {
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .item-thumb {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+    .text-orange {
+        color: var(--lazada-orange);
+    }
+    .btn-primary {
+        background-color: var(--lazada-orange);
+        border-color: var(--lazada-orange);
+        border-radius: 25px;
+    }
+    .form-control {
+        background-color: #f8f9fa;
+    }
+</style>

@@ -1,0 +1,223 @@
+@page "/seller-center"
+@using Lazada_Isagunde.Blazor.Services
+@using Lazada_Isagunde.Blazor.Models
+@inject FirebaseService FirebaseService
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>Seller Center - Lazada</PageTitle>
+
+<div class="seller-container">
+    <div class="tab-header d-flex mb-4 bg-white shadow-sm">
+        <div class="tab-item @(activeTab == "Create" ? "active" : "")" @onclick='() => activeTab = "Create"'>Create</div>
+        <div class="tab-item @(activeTab == "Orders" ? "active" : "")" @onclick='() => activeTab = "Orders"'>Orders</div>
+        <div class="tab-item @(activeTab == "Products" ? "active" : "")" @onclick='() => activeTab = "Products"'>Products</div>
+    </div>
+
+    @if (activeTab == "Create")
+    {
+        <div class="seller-card p-4">
+            <h4 class="fw-bold mb-4">Create New Product</h4>
+            
+            <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Product Name" @bind="newProduct.Title" />
+            </div>
+            <div class="mb-3">
+                <textarea class="form-control" placeholder="Description" rows="3" @bind="newProduct.Description"></textarea>
+            </div>
+            <div class="row mb-3">
+                <div class="col">
+                    <input type="number" class="form-control" placeholder="Price" @bind="newProduct.Price" />
+                </div>
+                <div class="col">
+                    <input type="number" class="form-control" placeholder="Stock Quantity" @bind="newProduct.Stock" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Image URL</label>
+                <input type="text" class="form-control" placeholder="Paste image URL here..." @bind="newProduct.ImageUrl" />
+            </div>
+
+            <button class="btn btn-primary w-100 py-3 fw-bold" @onclick="PublishProduct" disabled="@isProcessing">
+                @if (isProcessing)
+                {
+                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                }
+                else
+                {
+                    <span>Publish Product</span>
+                }
+            </button>
+        </div>
+    }
+    else if (activeTab == "Orders")
+    {
+        <div class="orders-section">
+            <h4 class="fw-bold mb-3">Recent Orders</h4>
+            @if (sellerOrders == null)
+            {
+                <div class="text-center my-5"><div class="spinner-border text-primary" role="status"></div></div>
+            }
+            else if (!sellerOrders.Any())
+            {
+                <div class="alert alert-info">No orders found for your products.</div>
+            }
+            else
+            {
+                @foreach (var order in sellerOrders)
+                {
+                    <div class="order-card p-3 mb-3 bg-white shadow-sm rounded">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-bold">@order.ReceiverName</span>
+                            <span class="badge" style="background-color: @order.StatusColor">@order.Status</span>
+                        </div>
+                        <div class="text-muted small mb-2">@order.ItemsSummary</div>
+                        <div class="fw-bold text-orange mb-3">@order.TotalPriceFormatted</div>
+                        
+                        <div class="d-flex gap-2">
+                            @if (order.Status == "Pending")
+                            {
+                                <button class="btn btn-sm btn-primary" @onclick='() => UpdateOrderStatus(order.Id, "Shipped")'>Mark Shipped</button>
+                            }
+                            @if (order.Status == "Shipped")
+                            {
+                                <button class="btn btn-sm btn-success" @onclick='() => UpdateOrderStatus(order.Id, "Delivered")'>Mark Delivered</button>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+    else if (activeTab == "Products")
+    {
+        <div class="products-section">
+            <h4 class="fw-bold mb-3">Your Products</h4>
+            @if (myProducts == null)
+            {
+                <div class="text-center my-5"><div class="spinner-border text-primary" role="status"></div></div>
+            }
+            else if (!myProducts.Any())
+            {
+                <div class="alert alert-info">You haven't listed any products yet.</div>
+            }
+            else
+            {
+                @foreach (var product in myProducts)
+                {
+                    <div class="product-item-card p-3 mb-3 bg-white shadow-sm rounded d-flex align-items-center">
+                        <img src="@(string.IsNullOrEmpty(product.ImageUrl) ? "images/placeholder.png" : product.ImageUrl)" class="item-thumb me-3" />
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1 fw-bold">@product.Title</h6>
+                            <div class="text-orange fw-bold">@product.PriceFormatted</div>
+                            <div class="text-muted small">Status: @product.Status</div>
+                        </div>
+                        <button class="btn btn-link text-danger" @onclick="() => DeleteProduct(product)">🗑️</button>
+                    </div>
+                }
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private string activeTab = "Create";
+    private Product newProduct = new();
+    private List<Order>? sellerOrders;
+    private List<Product>? myProducts;
+    private bool isProcessing = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.IsLoggedIn)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        var products = await FirebaseService.GetProductsAsync();
+        myProducts = products.Where(p => p.SellerId == AuthService.UserId).ToList();
+        sellerOrders = await FirebaseService.GetSellerOrdersAsync(AuthService.UserId!);
+    }
+
+    private async Task PublishProduct()
+    {
+        if (string.IsNullOrEmpty(newProduct.Title) || newProduct.Price <= 0) return;
+
+        isProcessing = true;
+        
+        var profile = await FirebaseService.GetUserProfileAsync(AuthService.UserId!);
+        newProduct.SellerId = AuthService.UserId!;
+        newProduct.SellerName = string.IsNullOrEmpty(profile.FullName) ? "Official Store" : profile.FullName;
+        newProduct.Status = "Pending";
+
+        await FirebaseService.AddProductAsync(newProduct);
+        
+        newProduct = new Product();
+        activeTab = "Products";
+        await LoadData();
+        isProcessing = false;
+    }
+
+    private async Task UpdateOrderStatus(string orderId, string status)
+    {
+        await FirebaseService.UpdateOrderStatusAsync(orderId, status);
+        await LoadData();
+    }
+
+    private async Task DeleteProduct(Product product)
+    {
+        await FirebaseService.DeleteProductAsync(product.Id!);
+        await LoadData();
+    }
+}
+
+<style>
+    .seller-container {
+        padding: 40px 0;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .tab-header {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .tab-item {
+        flex: 1;
+        text-align: center;
+        padding: 15px;
+        cursor: pointer;
+        font-weight: bold;
+        color: #666;
+        border-bottom: 3px solid transparent;
+    }
+    .tab-item.active {
+        color: var(--lazada-orange);
+        border-bottom-color: var(--lazada-orange);
+    }
+    .seller-card {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #eee;
+    }
+    .item-thumb {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+    .text-orange {
+        color: var(--lazada-orange);
+    }
+    .btn-primary {
+        background-color: var(--lazada-orange);
+        border-color: var(--lazada-orange);
+        border-radius: 25px;
+    }
+</style>

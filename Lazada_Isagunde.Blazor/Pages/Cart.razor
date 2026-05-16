@@ -114,30 +114,10 @@
         await LoadCart();
     }
 
-    private async Task Checkout()
+    private void Checkout()
     {
         if (cartItems == null || !cartItems.Any()) return;
-
-        isProcessing = true;
-        
-        var order = new Order
-        {
-            BuyerId = AuthService.UserId!,
-            ReceiverName = AuthService.UserDisplayName ?? AuthService.UserEmail ?? "User",
-            Items = cartItems,
-            TotalPrice = totalPrice,
-            Status = "Pending",
-            OrderDate = DateTime.UtcNow,
-            SellerId = cartItems.First().SellerId,
-            SellerName = cartItems.First().SellerName,
-            ShippingAddress = "" // Should ideally come from profile
-        };
-
-        await FirebaseService.PlaceOrderAsync(order);
-        await FirebaseService.ClearCartAsync(AuthService.UserId!);
-        
-        Navigation.NavigateTo("/orders");
-        isProcessing = false;
+        Navigation.NavigateTo("/checkout");
     }
 }
 
