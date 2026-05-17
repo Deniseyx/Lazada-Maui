@@ -1,43 +1,72 @@
 @using Lazada_Isagunde.Blazor.Services
 @inject AuthService AuthService
+@inject NavigationManager Navigation
 
 <header class="navbar-header">
     <div class="app-container header-content">
         <div class="header-left">
-            <a class="navbar-brand" href="@(AuthService.IsLoggedIn ? "/dashboard" : "/")">Lazada Isagunde</a>
+            <a class="navbar-brand" href="@(AuthService.IsLoggedIn ? "/dashboard" : "/")">Lazada</a>
         </div>
         
         <div class="header-center">
-            @if (AuthService.IsLoggedIn)
-            {
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Search in Lazada..." />
-                    <button class="search-button">
-                        <i class="bi bi-search"></i>
-                    </button>
-                </div>
-            }
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search products..." @bind="searchQuery" @onkeyup="HandleSearch" />
+                <button class="search-button" @onclick="ExecuteSearch">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
         </div>
 
         <div class="header-right">
             @if (AuthService.IsLoggedIn)
             {
-                <a href="/profile" class="header-icon-item">
-                    <i class="bi bi-person"></i>
-                    <span>Profile</span>
-                </a>
                 <a href="/cart" class="header-icon-item">
-                    <i class="bi bi-cart"></i>
-                    <span>Cart</span>
+                    <div class="icon-circle">
+                        <i class="bi bi-cart"></i>
+                    </div>
+                </a>
+                <a href="/profile" class="header-icon-item">
+                    <div class="icon-circle">
+                        <i class="bi bi-person"></i>
+                    </div>
                 </a>
             }
             else
             {
                 <a href="/login" class="header-icon-item">
-                    <i class="bi bi-box-arrow-in-right"></i>
+                    <div class="icon-circle">
+                        <i class="bi bi-box-arrow-in-right"></i>
+                    </div>
                     <span>Login</span>
                 </a>
             }
         </div>
     </div>
 </header>
+
+@code {
+    private string searchQuery = "";
+
+    private void HandleSearch(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            ExecuteSearch();
+        }
+    }
+
+    private void ExecuteSearch()
+    {
+        // For now, we can pass this to Dashboard via query string or shared state
+        // Dashboard already filters locally if we were to stay on the same page
+        if (Navigation.Uri.Contains("/dashboard"))
+        {
+            // Just update the query in the URL or notify dashboard
+            Navigation.NavigateTo($"/dashboard?q={searchQuery}");
+        }
+        else
+        {
+            Navigation.NavigateTo($"/dashboard?q={searchQuery}");
+        }
+    }
+}
