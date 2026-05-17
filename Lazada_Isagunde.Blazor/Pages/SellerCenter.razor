@@ -3,6 +3,7 @@
 @using Lazada_Isagunde.Blazor.Models
 @inject FirebaseService FirebaseService
 @inject AuthService AuthService
+@inject ImageService ImageService
 @inject NavigationManager Navigation
 
 <PageTitle>Seller Center - Lazada</PageTitle>
@@ -35,11 +36,37 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label fw-bold">Image URL</label>
-                <input type="text" class="form-control" placeholder="Paste image URL here..." @bind="newProduct.ImageUrl" />
+                <label class="form-label fw-bold">Category</label>
+                <select class="form-select" @bind="newProduct.Category">
+                    <option value="Electronics">Electronics</option>
+                    <option value="Fashion">Fashion</option>
+                    <option value="Home">Home</option>
+                    <option value="Health">Health</option>
+                    <option value="Male Clothes">Male Clothes</option>
+                    <option value="Female Clothes">Female Clothes</option>
+                    <option value="Kids">Kids</option>
+                    <option value="General">General</option>
+                </select>
             </div>
 
-            <button class="btn btn-primary w-100 py-3 fw-bold" @onclick="PublishProduct" disabled="@isProcessing">
+            <div class="mb-3">
+                <label class="form-label fw-bold">Product Image</label>
+                <div class="image-upload-wrapper">
+                    @if (!string.IsNullOrEmpty(newProduct.ImageUrl))
+                    {
+                        <div class="preview-image-container mb-2">
+                            <img src="@newProduct.ImageUrl" class="img-thumbnail" style="max-height: 150px;" />
+                        </div>
+                    }
+                    <InputFile OnChange="HandleFileSelected" class="form-control" accept="image/*" />
+                    @if (isUploading)
+                    {
+                        <div class="small text-muted mt-1">Uploading to Cloudinary...</div>
+                    }
+                </div>
+            </div>
+
+            <button class="btn btn-primary w-100 py-3 fw-bold" @onclick="PublishProduct" disabled="@(isProcessing || isUploading)">
                 @if (isProcessing)
                 {
                     <span class="spinner-border spinner-border-sm" role="status"></span>
@@ -127,6 +154,7 @@
     private List<Order>? sellerOrders;
     private List<Product>? myProducts;
     private bool isProcessing = false;
+    private bool isUploading = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -137,6 +165,25 @@
         }
 
         await LoadData();
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            isUploading = true;
+            StateHasChanged();
+            
+            var url = await ImageService.UploadImageAsync(file);
+            if (!string.IsNullOrEmpty(url))
+            {
+                newProduct.ImageUrl = url;
+            }
+            
+            isUploading = false;
+            StateHasChanged();
+        }
     }
 
     private async Task LoadData()
