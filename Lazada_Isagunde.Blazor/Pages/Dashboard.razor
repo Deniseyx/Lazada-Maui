@@ -2,6 +2,7 @@
 @using Lazada_Isagunde.Blazor.Services
 @using Lazada_Isagunde.Blazor.Models
 @using Microsoft.AspNetCore.WebUtilities
+@implements IDisposable
 @inject FirebaseService FirebaseService
 @inject AuthService AuthService
 @inject NavigationManager Navigation
@@ -24,7 +25,7 @@
     else if (!FilteredProducts.Any())
     {
         <div class="alert alert-info">
-            @(string.IsNullOrWhiteSpace(searchQuery) ? "No products found." : $"No products found matching \"{searchQuery}\".")
+            @(string.IsNullOrWhiteSpace(searchQuery) ? "No approved products found yet." : $"No products found matching \"{searchQuery}\".")
         </div>
     }
     else
@@ -34,7 +35,10 @@
             {
                 <div class="product-card" @onclick="() => NavigateToDetail(product.Id)">
                     <div class="product-image-wrapper">
-                        <img src="@(string.IsNullOrEmpty(product.ImageUrl) ? "images/placeholder.png" : product.ImageUrl)" class="product-image" alt="@product.Title" />
+                        <img src="@(string.IsNullOrEmpty(product.ImageUrl) ? "images/placeholder.png" : product.ImageUrl)" 
+                             class="product-image" 
+                             alt="@product.Title" 
+                             onerror="this.src='images/placeholder.png'" />
                     </div>
                     <div class="product-info">
                         <h5 class="product-title">@product.Title</h5>
@@ -53,7 +57,7 @@
     private IEnumerable<Product> FilteredProducts => 
         string.IsNullOrWhiteSpace(searchQuery) 
             ? products ?? new() 
-            : (products ?? new()).Where(p => p.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
+            : (products ?? new()).Where(p => p.Title != null && p.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
 
     protected override async Task OnInitializedAsync()
     {
@@ -76,12 +80,19 @@
 
     private void UpdateSearchQuery()
     {
-        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
-        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("q", out var q))
+        try 
         {
-            searchQuery = q!;
+            var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("q", out var q))
+            {
+                searchQuery = q!;
+            }
+            else
+            {
+                searchQuery = "";
+            }
         }
-        else
+        catch 
         {
             searchQuery = "";
         }
@@ -89,11 +100,14 @@
 
     private async Task LoadProducts()
     {
-        // Try to load Approved products first, if none, load all for demo/debug
-        products = await FirebaseService.GetProductsAsync("Approved");
-        if (products == null || !products.Any())
+        try 
         {
-            products = await FirebaseService.GetProductsAsync();
+            // STRICT LOGIC: Only show Approved products on the Dashboard
+            products = await FirebaseService.GetProductsAsync("Approved");
+        }
+        catch (Exception)
+        {
+            products = new List<Product>();
         }
     }
 

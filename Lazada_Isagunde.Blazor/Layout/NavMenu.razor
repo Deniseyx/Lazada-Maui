@@ -30,6 +30,14 @@
                         <i class="bi bi-person"></i>
                     </div>
                 </a>
+                @if (AuthService.IsAdmin)
+                {
+                    <a href="/admin" class="header-icon-item" title="Admin Dashboard">
+                        <div class="icon-circle">
+                            <i class="bi bi-shield-lock"></i>
+                        </div>
+                    </a>
+                }
             }
             else
             {
