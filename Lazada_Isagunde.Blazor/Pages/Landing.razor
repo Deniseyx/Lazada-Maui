@@ -6,68 +6,47 @@
 <PageTitle>Welcome to Lazada</PageTitle>
 
 <div class="landing-hero d-flex align-items-center justify-content-center">
-    <div class="landing-content text-center p-5 shadow-lg rounded bg-white">
+    <div class="landing-card text-center p-5 shadow-lg rounded">
         <div class="mb-4">
-            <h1 class="display-4 fw-bold text-orange">Lazada</h1>
-            <p class="lead text-muted">Your One-Stop Shopping Destination</p>
+            <h1 class="display-4 fw-bold text-white">Lazada</h1>
+            <p class="lead text-white-50">Your One-Stop Shopping Destination</p>
         </div>
         
         <div class="d-grid gap-3">
-            @if (AuthService.IsLoggedIn)
-            {
-                <button class="btn btn-primary btn-lg py-3 rounded-pill" @onclick='() => Navigation.NavigateTo("/dashboard")'>
-                    Go to Dashboard
-                </button>
-            }
-            else
-            {
-                <button class="btn btn-primary btn-lg py-3 rounded-pill" @onclick='() => Navigation.NavigateTo("/login")'>
-                    Get Started
-                </button>
-                <button class="btn btn-outline-primary btn-lg py-3 rounded-pill" @onclick='() => Navigation.NavigateTo("/register")'>
-                    Create Account
-                </button>
-            }
+            <button class="btn btn-primary btn-lg py-3 rounded-pill" @onclick='() => Navigation.NavigateTo("/login")'>
+                Login
+            </button>
+            <button class="btn btn-outline-light btn-lg py-3 rounded-pill" @onclick='() => Navigation.NavigateTo("/register")'>
+                Register
+            </button>
         </div>
     </div>
 </div>
-
-@code {
-    protected override void OnInitialized()
-    {
-        // If logged in, maybe just redirect to dashboard immediately
-        // if (AuthService.IsLoggedIn) Navigation.NavigateTo("/dashboard");
-    }
-}
 
 <style>
     .landing-hero {
         min-height: calc(100vh - 120px);
         background: linear-gradient(135deg, var(--lazada-orange) 0%, #ff9a44 100%);
-        margin: -20px -15px; /* Offset MainLayout padding */
+        margin: -20px -15px;
     }
-    .landing-content {
-        max-width: 500px;
+    .landing-card {
+        max-width: 450px;
         width: 100%;
-    }
-    .text-orange {
-        color: var(--lazada-orange);
+        background-color: rgba(0, 0, 0, 0.1); /* Subtle dark overlay for contrast against gradient */
+        backdrop-filter: blur(5px);
     }
     .btn-primary {
-        background-color: var(--lazada-orange);
-        border-color: var(--lazada-orange);
+        background-color: white;
+        color: var(--lazada-orange);
+        border-color: white;
+        font-weight: bold;
     }
     .btn-primary:hover {
-        background-color: #e05d1a;
-        border-color: #e05d1a;
+        background-color: #f8f9fa;
+        color: #e05d1a;
     }
-    .btn-outline-primary {
-        color: var(--lazada-orange);
-        border-color: var(--lazada-orange);
-    }
-    .btn-outline-primary:hover {
-        background-color: #fff5f0;
-        color: var(--lazada-orange);
-        border-color: var(--lazada-orange);
+    .btn-outline-light {
+        border-width: 2px;
+        font-weight: bold;
     }
 </style>
