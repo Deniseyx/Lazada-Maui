@@ -102,7 +102,7 @@
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted">Shipping Fee</span>
-                        <span>₱@shippingFee.ToString("N0") (@(cartItems?.Select(i => i.SellerId).Distinct().Count() ?? 0) Seller/s)</span>
+                        <span>₱@shippingFee.ToString("N0")</span>
                     </div>
                     <hr />
                     <div class="d-flex justify-content-between mb-4">
@@ -137,7 +137,7 @@
     private bool isProcessing = false;
 
     private double subtotal => cartItems?.Sum(i => i.Price * i.Quantity) ?? 0;
-    private double shippingFee => (cartItems?.Select(i => i.SellerId).Distinct().Count() ?? 0) * 80;
+    private double shippingFee = 80;
     private double totalPayment => subtotal + shippingFee;
 
     protected override async Task OnInitializedAsync()
@@ -175,55 +175,28 @@
             return;
         }
 
-        try
+        var order = new Order
         {
-            // Track which sellers have already been charged shipping in this transaction
-            var sellersChargedShipping = new HashSet<string>();
+            BuyerId = AuthService.UserId!,
+            ReceiverName = receiverName,
+            ReceiverPhone = receiverPhone,
+            ShippingAddress = shippingAddress,
+            Items = cartItems,
+            Subtotal = subtotal,
+            ShippingFee = shippingFee,
+            TotalPrice = totalPayment,
+            Status = "Pending",
+            OrderDate = DateTime.UtcNow,
+            PaymentMethod = paymentMethod,
+            SellerId = cartItems.First().SellerId,
+            SellerName = cartItems.First().SellerName
+        };
 
-            // Every unique product (CartItem) becomes its own order
-            foreach (var item in cartItems)
-            {
-                double itemShippingFee = 0;
-                if (!sellersChargedShipping.Contains(item.SellerId))
-                {
-                    itemShippingFee = 80; // ₱80 per seller
-                    sellersChargedShipping.Add(item.SellerId);
-                }
+        await FirebaseService.PlaceOrderAsync(order);
+        await FirebaseService.ClearCartAsync(AuthService.UserId!);
 
-                var order = new Order
-                {
-                    BuyerId = AuthService.UserId!,
-                    ReceiverName = receiverName,
-                    ReceiverPhone = receiverPhone,
-                    ShippingAddress = shippingAddress,
-                    Items = new List<CartItem> { item }, // Only this specific product
-                    Subtotal = item.Price * item.Quantity,
-                    ShippingFee = itemShippingFee,
-                    TotalPrice = (item.Price * item.Quantity) + itemShippingFee,
-                    Status = "Pending",
-                    OrderDate = DateTime.UtcNow,
-                    PaymentMethod = paymentMethod,
-                    SellerId = item.SellerId,
-                    SellerName = item.SellerName
-                };
-
-                await FirebaseService.PlaceOrderAsync(order);
-            }
-
-            // Clear whole cart after all orders placed
-            await FirebaseService.ClearCartAsync(AuthService.UserId!);
-
-            Navigation.NavigateTo("/orders");
-        }
-        catch (Exception ex)
-        {
-            // Simple error logging
-            Console.WriteLine($"Error placing order: {ex.Message}");
-        }
-        finally
-        {
-            isProcessing = false;
-        }
+        Navigation.NavigateTo("/orders");
+        isProcessing = false;
     }
 }
 
