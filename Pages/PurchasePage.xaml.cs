@@ -70,24 +70,28 @@ public partial class PurchasePage : ContentPage
 
         try
         {
-            // Split items by seller to create separate orders
-            var itemsBySeller = _items.GroupBy(i => i.SellerId);
+            // Track which sellers have already been charged shipping in this transaction
+            var sellersChargedShipping = new HashSet<string>();
 
-            foreach (var group in itemsBySeller)
+            // Every unique product (CartItem) becomes its own order
+            foreach (var item in _items)
             {
-                var sellerId = group.Key;
-                var sellerItems = group.ToList();
-                double sellerSubtotal = sellerItems.Sum(i => i.Price * i.Quantity);
+                double shippingFee = 0;
+                if (!sellersChargedShipping.Contains(item.SellerId))
+                {
+                    shippingFee = 80; // ₱80 per seller
+                    sellersChargedShipping.Add(item.SellerId);
+                }
 
                 var order = new Order
                 {
                     BuyerId = AuthService.UserId,
-                    SellerId = sellerId,
-                    SellerName = sellerItems[0].SellerName,
-                    Items = sellerItems,
-                    Subtotal = sellerSubtotal,
-                    ShippingFee = 80, // ₱80 per seller
-                    TotalPrice = sellerSubtotal + 80,
+                    SellerId = item.SellerId,
+                    SellerName = item.SellerName,
+                    Items = new List<CartItem> { item }, // Only this specific product
+                    Subtotal = item.Price * item.Quantity,
+                    ShippingFee = shippingFee,
+                    TotalPrice = (item.Price * item.Quantity) + shippingFee,
                     OrderDate = DateTime.Now,
                     Status = "Pending",
                     PaymentMethod = GetSelectedPaymentMethod(),
