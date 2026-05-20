@@ -42,7 +42,6 @@
                             </Frame>
                             <VerticalStackLayout VerticalOptions="Center">
                                 <Label x:Name="SellerNameLabel" FontAttributes="Bold" TextColor="Black" />
-                                <Label Text="Visit Store" TextColor="{StaticResource LazadaBlue}" FontSize="12" />
                             </VerticalStackLayout>
                         </HorizontalStackLayout>
                     </Frame>
@@ -114,7 +113,7 @@
             <!-- Owner Message Overlay -->
             <Label x:Name="OwnerMessageLabel"
                    Grid.Column="0" Grid.ColumnSpan="2"
-                   Text="You own this listing"
+                   Text="You own this product"
                    TextColor="White"
                    BackgroundColor="{StaticResource Gray500}"
                    HorizontalOptions="Fill"

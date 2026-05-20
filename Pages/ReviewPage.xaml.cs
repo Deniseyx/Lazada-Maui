@@ -58,6 +58,31 @@ public partial class ReviewPage : ContentPage
         try
         {
             SubmitButton.IsEnabled = false;
+
+            string buyerName = "Customer";
+            if (AuthService.IsAdmin)
+            {
+                buyerName = "Admin User";
+            }
+            else if (!string.IsNullOrEmpty(AuthService.UserId))
+            {
+                try
+                {
+                    var profile = await _firebaseService.GetUserProfileAsync(AuthService.UserId);
+                    if (profile != null && !string.IsNullOrEmpty(profile.FullName))
+                    {
+                        buyerName = profile.FullName;
+                    }
+                    else
+                    {
+                        buyerName = AuthService.UserDisplayName ?? AuthService.UserEmail ?? "User_" + AuthService.UserId.Substring(0, 4);
+                    }
+                }
+                catch
+                {
+                    buyerName = AuthService.UserDisplayName ?? AuthService.UserEmail ?? "Customer";
+                }
+            }
             
             // Review each item in the order
             foreach (var item in _order.Items)
@@ -66,7 +91,7 @@ public partial class ReviewPage : ContentPage
                 {
                     ProductId = item.ProductId,
                     BuyerId = AuthService.UserId ?? "Unknown",
-                    BuyerName = "Customer", // Ideally fetch from profile
+                    BuyerName = buyerName,
                     Rating = _currentRating,
                     Comment = ReviewEditor.Text ?? string.Empty,
                     Timestamp = DateTime.UtcNow

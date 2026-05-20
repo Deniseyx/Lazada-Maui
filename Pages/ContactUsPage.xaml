@@ -60,7 +60,7 @@
 
                 <Frame BackgroundColor="#F8F9FA" BorderColor="#E9ECEF" CornerRadius="15" Padding="20">
                     <VerticalStackLayout Spacing="10">
-                        <Label Text="Professional Profile" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource LazadaOrange}" />
+                        <Label Text="Bio" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource LazadaOrange}" />
                         <Label Text="Passionate developer dedicated to creating intuitive and efficient mobile applications. Specialized in .NET MAUI and cross-platform development."
                                FontSize="14"
                                TextColor="Black"
@@ -70,9 +70,9 @@
 
                 <!-- Footer button to go back -->
                 <Button Text="Back to Profile"
-                        BackgroundColor="{StaticResource LazadaOrange}"
-                        TextColor="White"
-                        FontAttributes="Bold"
+                            BackgroundColor="{StaticResource LazadaOrange}"
+                            TextColor="White"
+                            FontAttributes="Bold"
                         CornerRadius="25"
                         HeightRequest="50"
                         WidthRequest="200"

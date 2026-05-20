@@ -163,14 +163,14 @@
                 <RoundRectangle CornerRadius="0" />
             </Border.StrokeShape>
             
-            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12" VerticalOptions="Center">
+            <Grid ColumnDefinitions="Auto, Auto, *" ColumnSpacing="12" VerticalOptions="Center">
                 <HorizontalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="4">
                     <CheckBox IsChecked="True" Color="{StaticResource LazadaOrange}" WidthRequest="24" HeightRequest="24" />
                     <Label Text="All" FontSize="14" TextColor="Black" VerticalOptions="Center" />
                 </HorizontalStackLayout>
 
-                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,12,0">
-                    <HorizontalStackLayout HorizontalOptions="End" Spacing="4">
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Start">
+                    <HorizontalStackLayout HorizontalOptions="Start" Spacing="4">
                         <Label Text="Total:" FontSize="14" TextColor="Black" VerticalOptions="Center" />
                         <Label x:Name="TotalPriceLabel" 
                                Text="₱0" 
@@ -179,7 +179,7 @@
                                TextColor="{StaticResource LazadaOrange}" 
                                VerticalOptions="Center" />
                     </HorizontalStackLayout>
-                    <Label Text="Saved ₱0" FontSize="11" TextColor="{StaticResource Gray500}" HorizontalOptions="End" />
+                    <Label Text="Saved ₱0" FontSize="11" TextColor="{StaticResource Gray500}" HorizontalOptions="Start" />
                 </VerticalStackLayout>
                 
                 <Button Grid.Column="2"
@@ -191,6 +191,7 @@
                         WidthRequest="130"
                         HeightRequest="44"
                         CornerRadius="22"
+                        HorizontalOptions="End"
                         Clicked="OnCheckoutClicked" />
             </Grid>
         </Border>

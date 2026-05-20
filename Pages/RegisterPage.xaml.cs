@@ -28,6 +28,22 @@ public partial class RegisterPage : ContentPage
 
         if (success)
         {
+            // Save user profile with the name
+            try
+            {
+                var firebaseService = App.Services.GetService<FirebaseService>();
+                if (firebaseService != null && !string.IsNullOrEmpty(AuthService.UserId))
+                {
+                    await firebaseService.SaveUserProfileAsync(new Models.UserProfile
+                    {
+                        Id = AuthService.UserId,
+                        FullName = name,
+                        Email = email
+                    });
+                }
+            }
+            catch { /* Ignore profile save errors during registration */ }
+
             await DisplayAlert("Success", "Account created! Please login.", "OK");
             await Navigation.PopAsync();
         }
