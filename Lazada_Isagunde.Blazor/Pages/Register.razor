@@ -3,9 +3,9 @@
 @inject AuthService AuthService
 @inject NavigationManager Navigation
 
-<div class="auth-container">
-    <div class="auth-card">
-        <h2 class="auth-title">Register</h2>
+<div class="auth-container d-flex align-items-center justify-content-center">
+    <div class="modern-card auth-card">
+        <h2 class="section-title text-center mb-4">Create Account</h2>
         
         @if (!string.IsNullOrEmpty(errorMessage))
         {
@@ -24,7 +24,7 @@
             <input type="password" class="form-control" placeholder="Password" @bind="password" />
         </div>
 
-        <button class="btn btn-primary w-100 mb-3" @onclick="HandleRegister" disabled="@isProcessing">
+        <button class="btn btn-primary w-100 mb-4" @onclick="HandleRegister" disabled="@isProcessing">
             @if (isProcessing)
             {
                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -37,7 +37,7 @@
         </button>
 
         <div class="text-center">
-            <p>Already have an account? <a href="/login" class="auth-link">Login</a></p>
+            <p class="text-muted">Already have an account? <a href="/login" class="auth-link">Login</a></p>
         </div>
     </div>
 </div>
@@ -78,39 +78,34 @@
 
 <style>
     .auth-container {
-        height: calc(100vh - 100px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: #fff;
+        min-height: calc(100vh - 150px);
+        background-color: var(--lazada-bg);
     }
     .auth-card {
         width: 100%;
-        max-width: 400px;
-        padding: 30px;
+        max-width: 420px;
+        padding: 40px !important;
     }
-    .auth-title {
-        font-size: 28px;
-        font-weight: bold;
-        margin-bottom: 25px;
-        color: var(--lazada-purple);
+    .auth-link {
+        color: var(--lazada-orange);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
     }
-    .form-control {
-        background-color: #f8f9fa;
-        border: none;
-        height: 50px;
-        padding: 10px 15px;
+    .auth-link:hover {
+        color: var(--lazada-orange-deep);
+        text-decoration: underline;
     }
     .btn-primary {
         background-color: var(--lazada-orange);
-        border-color: var(--lazada-orange);
-        border-radius: 12px;
-        height: 50px;
-        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        height: 52px;
+        font-weight: 700;
+        font-size: 1.1rem;
     }
-    .auth-link {
-        color: var(--lazada-purple);
-        text-decoration: none;
-        font-weight: bold;
+    .btn-primary:hover {
+        background-color: var(--lazada-orange-deep);
     }
 </style>
+
