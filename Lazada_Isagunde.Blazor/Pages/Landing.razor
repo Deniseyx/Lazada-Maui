@@ -5,18 +5,18 @@
 
 <PageTitle>Welcome to Lazada</PageTitle>
 
-<div class="landing-hero d-flex align-items-center justify-content-center">
-    <div class="landing-card text-center p-5 shadow-lg rounded">
-        <div class="mb-4">
-            <h1 class="display-4 fw-bold text-white">Lazada</h1>
-            <p class="lead text-white-50">Your One-Stop Shopping Destination</p>
+<div class="landing-container d-flex align-items-center justify-content-center">
+    <div class="modern-card landing-content text-center">
+        <div class="mb-5">
+            <h1 class="brand-title">Lazada</h1>
+            <p class="brand-subtitle">Your One-Stop Shopping Destination</p>
         </div>
         
-        <div class="d-grid gap-3">
-            <button class="btn btn-primary btn-lg py-3 rounded-pill" @onclick='() => Navigation.NavigateTo("/login")'>
+        <div class="d-grid gap-3 px-md-4">
+            <button class="btn btn-primary" @onclick='() => Navigation.NavigateTo("/login")'>
                 Login
             </button>
-            <button class="btn btn-outline-light btn-lg py-3 rounded-pill" @onclick='() => Navigation.NavigateTo("/register")'>
+            <button class="btn btn-outline-secondary" @onclick='() => Navigation.NavigateTo("/register")'>
                 Register
             </button>
         </div>
@@ -24,29 +24,55 @@
 </div>
 
 <style>
-    .landing-hero {
-        min-height: calc(100vh - 120px);
-        background: linear-gradient(135deg, var(--lazada-orange) 0%, #ff9a44 100%);
-        margin: -20px -15px;
+    .landing-container {
+        min-height: calc(100vh - 150px);
+        background-color: var(--lazada-bg);
     }
-    .landing-card {
-        max-width: 450px;
+    .landing-content {
+        max-width: 480px;
         width: 100%;
-        background-color: rgba(0, 0, 0, 0.1); /* Subtle dark overlay for contrast against gradient */
-        backdrop-filter: blur(5px);
+        padding: 60px 40px !important;
+    }
+    .brand-title {
+        font-size: 3.5rem;
+        font-weight: 900;
+        color: var(--lazada-orange);
+        letter-spacing: -2px;
+        margin-bottom: 0.5rem;
+    }
+    .brand-subtitle {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        font-weight: 400;
     }
     .btn-primary {
-        background-color: white;
-        color: var(--lazada-orange);
-        border-color: white;
-        font-weight: bold;
+        background-color: var(--lazada-orange);
+        border: none;
+        border-radius: 8px;
+        padding: 14px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: transform 0.2s, background-color 0.2s;
+        color: white;
     }
     .btn-primary:hover {
-        background-color: #f8f9fa;
-        color: #e05d1a;
+        background-color: var(--lazada-orange-deep);
+        transform: translateY(-2px);
+        color: white;
     }
-    .btn-outline-light {
-        border-width: 2px;
-        font-weight: bold;
+    .btn-outline-secondary {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 14px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--text-main);
+        background: transparent;
+        transition: all 0.2s;
+    }
+    .btn-outline-secondary:hover {
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+        color: var(--lazada-orange);
     }
 </style>
