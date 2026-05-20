@@ -8,24 +8,20 @@
 <PageTitle>My Account - Lazada</PageTitle>
 
 <div class="profile-container">
-    <div class="profile-header mb-4 p-4 text-white">
-        <div class="d-flex align-items-center">
-            <div class="profile-avatar">👤</div>
-            <div class="ms-4">
-                <h2 class="mb-0">@(profile?.FullName ?? AuthService.UserDisplayName ?? "User")</h2>
-                <p class="mb-0 opacity-75">@AuthService.UserEmail</p>
-                @if (AuthService.IsAdmin)
-                {
-                    <span class="badge bg-light text-primary mt-2">Admin</span>
-                }
-            </div>
+    <div class="d-flex align-items-center mb-5 mt-2">
+        <div class="profile-avatar-new">
+            <i class="bi bi-person-circle"></i>
+        </div>
+        <div class="ms-4">
+            <h2 class="fw-bold mb-1">@(profile?.FullName ?? AuthService.UserDisplayName ?? "User")</h2>
+            <p class="text-muted mb-0">@AuthService.UserEmail</p>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-8">
-            <div class="profile-card p-4 mb-4">
-                <h4 class="mb-4">Shipping Information</h4>
+            <div class="modern-card">
+                <h4 class="section-title">Shipping Information</h4>
                 
                 @if (isSuccess)
                 {
@@ -47,7 +43,7 @@
                     <textarea class="form-control" @bind="profile.ShippingAddress" rows="3" placeholder="Enter full address"></textarea>
                 </div>
 
-                <button class="btn btn-primary px-5" @onclick="SaveProfile" disabled="@isProcessing">
+                <button class="btn btn-primary" @onclick="SaveProfile" disabled="@isProcessing">
                     @if (isProcessing)
                     {
                         <span class="spinner-border spinner-border-sm" role="status"></span>
@@ -61,28 +57,29 @@
         </div>
 
         <div class="col-md-4">
-            <div class="list-group mb-4">
-                <a href="/orders" class="list-group-item list-group-item-action py-3">
-                    <span class="me-2">📦</span> My Orders
-                </a>
-                <a href="/seller-center" class="list-group-item list-group-item-action py-3">
-                    <span class="me-2">🏪</span> Seller Center
-                </a>
-                <a href="/contact" class="list-group-item list-group-item-action py-3">
-                    <span class="me-2">📞</span> Contact Us
-                </a>
-                <a href="/settings" class="list-group-item list-group-item-action py-3">
-                    <span class="me-2">⚙️</span> Settings
-                </a>
-                @if (AuthService.IsAdmin)
-                {
-                    <a href="/admin" class="list-group-item list-group-item-action py-3 text-primary fw-bold">
-                        <span class="me-2">🛡️</span> Admin Dashboard
+            <div class="modern-card p-0 overflow-hidden">
+                <div class="list-group list-group-flush">
+                    <a href="/orders" class="list-group-item list-group-item-action border-0 py-3 px-4">
+                        <i class="bi bi-box me-3 text-muted"></i> My Orders
                     </a>
-                }
+                    <a href="/seller-center" class="list-group-item list-group-item-action border-0 py-3 px-4">
+                        <i class="bi bi-shop me-3 text-muted"></i> Seller Center
+                    </a>
+                    <a href="/contact" class="list-group-item list-group-item-action border-0 py-3 px-4">
+                        <i class="bi bi-headset me-3 text-muted"></i> Contact Us
+                    </a>
+                    @if (AuthService.IsAdmin)
+                    {
+                        <a href="/admin" class="list-group-item list-group-item-action border-0 py-3 px-4 text-primary">
+                            <i class="bi bi-shield-check me-3"></i> Admin Dashboard
+                        </a>
+                    }
+                </div>
             </div>
 
-            <button class="btn btn-outline-danger w-100 py-3" @onclick="Logout">Log Out</button>
+            <button class="btn btn-link text-danger text-decoration-none w-100 mt-2" @onclick="Logout">
+                <i class="bi bi-box-arrow-right me-2"></i> Log Out
+            </button>
         </div>
     </div>
 </div>
@@ -130,35 +127,26 @@
 }
 
 <style>
-    .profile-container {
-        padding: 40px 0;
+    .profile-avatar-new {
+        font-size: 64px;
+        color: var(--lazada-orange);
+        line-height: 1;
     }
-    .profile-header {
-        background-color: var(--lazada-orange);
-        border-radius: 8px;
+    .list-group-item:hover {
+        background-color: #fff9f6 !important;
+        color: var(--lazada-orange) !important;
     }
-    .profile-avatar {
-        font-size: 48px;
-        background: white;
-        width: 80px;
-        height: 80px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-    }
-    .profile-card {
-        background: white;
-        border-radius: 8px;
-        border: 1px solid #eee;
-    }
-    .form-control {
-        background-color: #f8f9fa;
-        border: 1px solid #ddd;
+    .list-group-item:hover i {
+        color: var(--lazada-orange) !important;
     }
     .btn-primary {
         background-color: var(--lazada-orange);
-        border-color: var(--lazada-orange);
-        border-radius: 25px;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 30px;
+        font-weight: 600;
+    }
+    .btn-primary:hover {
+        background-color: var(--lazada-orange-deep);
     }
 </style>
