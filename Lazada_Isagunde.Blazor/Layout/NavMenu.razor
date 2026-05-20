@@ -20,12 +20,12 @@
         <div class="header-right">
             @if (AuthService.IsLoggedIn)
             {
-                <a href="/cart" class="header-icon-item">
+                <a href="/cart" class="header-icon-item" title="Cart">
                     <div class="icon-circle">
                         <i class="bi bi-cart"></i>
                     </div>
                 </a>
-                <a href="/profile" class="header-icon-item">
+                <a href="/profile" class="header-icon-item" title="Profile">
                     <div class="icon-circle">
                         <i class="bi bi-person"></i>
                     </div>
@@ -41,11 +41,10 @@
             }
             else
             {
-                <a href="/login" class="header-icon-item">
+                <a href="/login" class="header-icon-item" title="Login">
                     <div class="icon-circle">
                         <i class="bi bi-box-arrow-in-right"></i>
                     </div>
-                    <span>Login</span>
                 </a>
             }
         </div>
