@@ -10,6 +10,28 @@
 <PageTitle>Lazada - Just For You</PageTitle>
 
 <div class="dashboard-container">
+    <div class="category-strip">
+        @foreach (var cat in new[] { "General", "Electronics", "Fashion", "Home", "Health", "Male Clothes", "Female Clothes", "Kids" })
+        {
+            <div class="category-item @(selectedCategory == cat ? "active" : "")" @onclick="() => selectedCategory = cat">
+                <div class="category-icon">
+                    @switch (cat)
+                    {
+                        case "General": <span>🛒</span> break;
+                        case "Electronics": <span>💻</span> break;
+                        case "Fashion": <span>✨</span> break;
+                        case "Home": <span>🏠</span> break;
+                        case "Health": <span>💊</span> break;
+                        case "Male Clothes": <span>👕</span> break;
+                        case "Female Clothes": <span>👗</span> break;
+                        case "Kids": <span>🧸</span> break;
+                    }
+                </div>
+                <div class="category-label">@cat</div>
+            </div>
+        }
+    </div>
+
     <div class="section-header mb-4">
         <h2 class="section-title">Just For You</h2>
     </div>
@@ -53,11 +75,12 @@
 @code {
     private List<Product>? products;
     private string searchQuery = "";
+    private string selectedCategory = "General";
 
     private IEnumerable<Product> FilteredProducts => 
-        string.IsNullOrWhiteSpace(searchQuery) 
-            ? products ?? new() 
-            : (products ?? new()).Where(p => p.Title != null && p.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
+        (products ?? new())
+        .Where(p => (string.IsNullOrWhiteSpace(searchQuery) || (p.Title != null && p.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)))
+                    && (selectedCategory == "General" || p.Category == selectedCategory));
 
     protected override async Task OnInitializedAsync()
     {
