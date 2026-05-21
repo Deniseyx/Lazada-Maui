@@ -1,58 +1,117 @@
 @using Lazada_Isagunde.Blazor.Services
+@implements IDisposable
 @inject AuthService AuthService
 @inject NavigationManager Navigation
 
 <header class="navbar-header">
     <div class="app-container header-content">
-        <div class="header-left">
-            <a class="navbar-brand" href="@(AuthService.IsLoggedIn ? "/dashboard" : "/")">Lazada</a>
-        </div>
-        
-        <div class="header-center">
-            <div class="search-container">
-                <input type="text" class="search-input" placeholder="Search products..." @bind="searchQuery" @onkeyup="HandleSearch" />
-                <button class="search-button" @onclick="ExecuteSearch">
-                    <i class="bi bi-search"></i>
-                </button>
+        @if (IsAuthPage)
+        {
+            <div class="w-100 d-flex justify-content-center">
+                <a class="navbar-brand m-0" href="/">Lazada</a>
             </div>
-        </div>
-
-        <div class="header-right">
-            @if (AuthService.IsLoggedIn)
+        }
+        else
+        {
+            <div class="header-left">
+                <a class="navbar-brand" href="@(AuthService.IsLoggedIn ? (AuthService.IsAdmin ? "/admin" : "/dashboard") : "/")">Lazada</a>
+            </div>
+            
+            @if (!AuthService.IsAdmin)
             {
-                <a href="/cart" class="header-icon-item" title="Cart">
-                    <div class="icon-circle">
-                        <i class="bi bi-cart"></i>
+                <div class="header-center">
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="Search products..." @bind="searchQuery" @onkeyup="HandleSearch" />
+                        <button class="search-button" @onclick="ExecuteSearch">
+                            <i class="bi bi-search"></i>
+                        </button>
                     </div>
-                </a>
-                <a href="/profile" class="header-icon-item" title="Profile">
-                    <div class="icon-circle">
-                        <i class="bi bi-person"></i>
-                    </div>
-                </a>
-                @if (AuthService.IsAdmin)
+                </div>
+            }
+
+            <div class="header-right">
+                @if (AuthService.IsLoggedIn)
                 {
-                    <a href="/admin" class="header-icon-item" title="Admin Dashboard">
+                    @if (!AuthService.IsAdmin)
+                    {
+                        <a href="/cart" class="header-icon-item" title="Cart">
+                            <div class="icon-circle">
+                                <i class="bi bi-cart"></i>
+                            </div>
+                        </a>
+                        <a href="/profile" class="header-icon-item" title="Profile">
+                            <div class="icon-circle">
+                                <i class="bi bi-person"></i>
+                            </div>
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="/admin" class="header-icon-item" title="Admin Dashboard">
+                            <div class="icon-circle admin-shield">
+                                <i class="bi bi-shield-lock"></i>
+                            </div>
+                        </a>
+                        <button class="btn btn-link text-white text-decoration-none ms-3" @onclick="Logout">Logout</button>
+                    }
+                }
+                else
+                {
+                    <a href="/login" class="header-icon-item" title="Login">
                         <div class="icon-circle">
-                            <i class="bi bi-shield-lock"></i>
+                            <i class="bi bi-box-arrow-in-right"></i>
                         </div>
                     </a>
                 }
-            }
-            else
-            {
-                <a href="/login" class="header-icon-item" title="Login">
-                    <div class="icon-circle">
-                        <i class="bi bi-box-arrow-in-right"></i>
-                    </div>
-                </a>
-            }
-        </div>
+            </div>
+        }
     </div>
 </header>
 
 @code {
     private string searchQuery = "";
+
+    protected override void OnInitialized()
+    {
+        AuthService.OnChange += StateHasChanged;
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    public void Dispose()
+    {
+        AuthService.OnChange -= StateHasChanged;
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.Logout();
+        Navigation.NavigateTo("/login");
+    }
+
+    private bool IsAuthPage
+    {
+        get
+        {
+            var relativePath = Navigation.ToBaseRelativePath(Navigation.Uri).ToLower();
+            var queryIndex = relativePath.IndexOf('?');
+            if (queryIndex >= 0)
+            {
+                relativePath = relativePath.Substring(0, queryIndex);
+            }
+            relativePath = relativePath.Trim('/');
+
+            return string.IsNullOrEmpty(relativePath) ||
+                   relativePath.Contains("login") || 
+                   relativePath.Contains("register") || 
+                   relativePath.Contains("forgot-password");
+        }
+    }
 
     private void HandleSearch(KeyboardEventArgs e)
     {
@@ -77,3 +136,12 @@
         }
     }
 }
+
+<style>
+    .admin-shield {
+        background-color: #e74c3c !important;
+    }
+    .admin-shield i {
+        color: white !important;
+    }
+</style>

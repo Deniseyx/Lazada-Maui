@@ -109,7 +109,7 @@ body {
 
 .icon-circle {
     background: white;
-    color: var(--lazada-purple); /* Purple icon inside white circle matching mobile */
+    color: var(--lazada-orange); /* Orange icon inside white circle */
     width: 45px;
     height: 45px;
     border-radius: 50%;
@@ -121,13 +121,8 @@ body {
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-/* Specific icon adjustments */
-.icon-circle i.bi-cart {
-    color: var(--lazada-blue);
-}
-
-.icon-circle i.bi-person {
-    color: var(--lazada-purple);
+.icon-circle i {
+    color: var(--lazada-orange) !important;
 }
 
 /* Content Area */

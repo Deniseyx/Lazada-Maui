@@ -21,17 +21,21 @@
             <h4 class="fw-bold mb-4">Create New Product</h4>
             
             <div class="mb-3">
-                <input type="text" class="form-control" placeholder="Product Name" @bind="newProduct.Title" />
+                <label class="form-label fw-bold">Product Name</label>
+                <input type="text" class="form-control" placeholder="Enter product name" @bind="newProduct.Title" />
             </div>
             <div class="mb-3">
-                <textarea class="form-control" placeholder="Description" rows="3" @bind="newProduct.Description"></textarea>
+                <label class="form-label fw-bold">Description</label>
+                <textarea class="form-control" placeholder="Describe your product" rows="3" @bind="newProduct.Description"></textarea>
             </div>
             <div class="row mb-3">
                 <div class="col">
-                    <input type="number" class="form-control" placeholder="Price" @bind="newProduct.Price" />
+                    <label class="form-label fw-bold">Price (₱)</label>
+                    <input type="number" class="form-control" placeholder="0" @bind="newProduct.Price" />
                 </div>
                 <div class="col">
-                    <input type="number" class="form-control" placeholder="Stock Quantity" @bind="newProduct.Stock" />
+                    <label class="form-label fw-bold">Stock Quantity</label>
+                    <input type="number" class="form-control" placeholder="10" @bind="newProduct.Stock" />
                 </div>
             </div>
 
@@ -62,6 +66,10 @@
                     @if (isUploading)
                     {
                         <div class="small text-muted mt-1">Uploading to Cloudinary...</div>
+                    }
+                    @if (!string.IsNullOrEmpty(uploadError))
+                    {
+                        <div class="small text-danger mt-1">@uploadError</div>
                     }
                 </div>
             </div>
@@ -134,7 +142,7 @@
                 @foreach (var product in myProducts)
                 {
                     <div class="product-item-card p-3 mb-3 bg-white shadow-sm rounded d-flex align-items-center">
-                        <img src="@(string.IsNullOrEmpty(product.ImageUrl) ? "images/placeholder.png" : product.ImageUrl)" class="item-thumb me-3" />
+                        <img src="@product.DisplayImageUrl" class="item-thumb me-3" onerror="this.src='https://placehold.co/600x400?text=No+Image'" />
                         <div class="flex-grow-1">
                             <h6 class="mb-1 fw-bold">@product.Title</h6>
                             <div class="text-orange fw-bold">@product.PriceFormatted</div>
@@ -155,6 +163,7 @@
     private List<Product>? myProducts;
     private bool isProcessing = false;
     private bool isUploading = false;
+    private string uploadError = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -173,12 +182,17 @@
         if (file != null)
         {
             isUploading = true;
+            uploadError = "";
             StateHasChanged();
             
             var url = await ImageService.UploadImageAsync(file);
             if (!string.IsNullOrEmpty(url))
             {
                 newProduct.ImageUrl = url;
+            }
+            else
+            {
+                uploadError = "Failed to upload image. Please try again with a smaller file (max 10MB).";
             }
             
             isUploading = false;

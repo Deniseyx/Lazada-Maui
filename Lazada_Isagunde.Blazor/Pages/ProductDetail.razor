@@ -21,7 +21,7 @@ else
         <div class="row">
             <div class="col-md-6">
                 <div class="product-image-container">
-                    <img src="@(string.IsNullOrEmpty(product.ImageUrl) ? "images/placeholder.png" : product.ImageUrl)" class="main-image" />
+                    <img src="@product.DisplayImageUrl" class="main-image" onerror="this.src='https://placehold.co/600x400?text=No+Image'" />
                 </div>
             </div>
             <div class="col-md-6">
@@ -41,7 +41,6 @@ else
                             <div class="seller-avatar">🏪</div>
                             <div class="ms-3">
                                 <div class="seller-name">@product.SellerName</div>
-                                <a href="javascript:void(0)" class="visit-store">Visit Store</a>
                             </div>
                         </div>
                     </div>
@@ -51,10 +50,19 @@ else
                         <span class="value">@product.Stock left</span>
                     </div>
 
-                    <div class="action-buttons d-flex gap-3 mb-5">
-                        <button class="btn btn-outline-primary btn-lg flex-grow-1" @onclick="AddToCart">Add to Cart</button>
-                        <button class="btn btn-primary btn-lg flex-grow-1" @onclick="BuyNow">Buy Now</button>
-                    </div>
+                    @if (IsOwnProduct)
+                    {
+                        <div class="owner-message-box text-center p-3 mb-5">
+                            You own this product
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="action-buttons d-flex gap-3 mb-5">
+                            <button class="btn btn-outline-primary btn-lg flex-grow-1" @onclick="AddToCart">Add to Cart</button>
+                            <button class="btn btn-primary btn-lg flex-grow-1" @onclick="BuyNow">Buy Now</button>
+                        </div>
+                    }
 
                     <div class="description-section">
                         <h3 class="section-subtitle">Description</h3>
@@ -99,6 +107,8 @@ else
     private Product? product;
     private List<Review>? reviews;
 
+    private bool IsOwnProduct => product?.SellerId == AuthService.UserId;
+
     protected override async Task OnInitializedAsync()
     {
         if (!AuthService.IsLoggedIn)
@@ -116,7 +126,7 @@ else
 
     private async Task AddToCart()
     {
-        if (product == null) return;
+        if (product == null || IsOwnProduct) return;
         
         var cartItem = new CartItem
         {
@@ -136,7 +146,7 @@ else
     private async Task BuyNow()
     {
         // Add to cart then go to checkout
-        if (product == null) return;
+        if (product == null || IsOwnProduct) return;
         
         var cartItem = new CartItem
         {
@@ -223,5 +233,17 @@ else
         border-radius: 25px;
         height: 50px;
         font-weight: bold;
+    }
+    .owner-message-box {
+        background-color: #6c757d;
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+        border-radius: 25px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
     }
 </style>

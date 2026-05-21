@@ -160,7 +160,7 @@
                             <DataTemplate x:DataType="models:Product">
                                 <Frame Margin="0,0,0,10" Padding="10" HasShadow="False" BorderColor="{StaticResource Gray200}" BackgroundColor="White">
                                     <Grid ColumnDefinitions="80, *, Auto">
-                                        <Image Source="{Binding ImageUrl}" WidthRequest="70" HeightRequest="70" Aspect="AspectFill" />
+                                        <Image Source="{Binding DisplayImageUrl}" WidthRequest="70" HeightRequest="70" Aspect="AspectFill" />
                                         <VerticalStackLayout Grid.Column="1" Margin="10,0" VerticalOptions="Center">
                                             <Label Text="{Binding Title}" FontAttributes="Bold" MaxLines="1" TextColor="Black" />
                                             <Label Text="{Binding PriceFormatted}" TextColor="{StaticResource LazadaOrange}" />

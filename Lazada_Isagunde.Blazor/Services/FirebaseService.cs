@@ -238,13 +238,21 @@ public class FirebaseService
     #region User Profile
     public async Task<UserProfile> GetUserProfileAsync(string userId)
     {
-        var profile = await _client
-            .Child("users")
-            .Child(userId)
-            .OnceSingleAsync<UserProfile>();
+        try
+        {
+            var profile = await _client
+                .Child("users")
+                .Child(userId)
+                .OnceSingleAsync<UserProfile>();
 
-        if (profile != null) profile.Id = userId;
-        return profile ?? new UserProfile { Id = userId };
+            if (profile != null) profile.Id = userId;
+            return profile ?? new UserProfile { Id = userId };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching user profile: {ex.Message}");
+            return new UserProfile { Id = userId };
+        }
     }
 
     public async Task SaveUserProfileAsync(UserProfile profile)

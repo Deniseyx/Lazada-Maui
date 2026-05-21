@@ -39,6 +39,7 @@
         color: var(--lazada-orange);
         letter-spacing: -2px;
         margin-bottom: 0.5rem;
+        outline: none; /* Remove focus outline from FocusOnNavigate */
     }
     .brand-subtitle {
         color: var(--text-muted);
@@ -76,3 +77,20 @@
         color: var(--lazada-orange);
     }
 </style>
+
+@code {
+    protected override void OnInitialized()
+    {
+        if (AuthService.IsLoggedIn)
+        {
+            if (AuthService.IsAdmin)
+            {
+                Navigation.NavigateTo("/admin");
+            }
+            else
+            {
+                Navigation.NavigateTo("/dashboard");
+            }
+        }
+    }
+}

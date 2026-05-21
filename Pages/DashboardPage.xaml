@@ -87,7 +87,7 @@
                                     <TapGestureRecognizer Tapped="OnProductTapped" CommandParameter="{Binding .}" />
                                 </Frame.GestureRecognizers>
                                 <VerticalStackLayout>
-                                    <Image Source="{Binding ImageUrl}"
+                                    <Image Source="{Binding DisplayImageUrl}"
                                            HeightRequest="140"
                                            Aspect="AspectFill"
                                            BackgroundColor="{StaticResource Gray200}" />

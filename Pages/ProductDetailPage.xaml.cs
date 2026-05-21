@@ -22,7 +22,7 @@ public partial class ProductDetailPage : ContentPage
 
     private void LoadProductDetails()
     {
-        ProductImage.Source = _product.ImageUrl;
+        ProductImage.Source = _product.DisplayImageUrl;
         PriceLabel.Text = _product.PriceFormatted;
         TitleLabel.Text = _product.Title;
         DescriptionLabel.Text = _product.Description;

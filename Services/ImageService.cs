@@ -22,13 +22,28 @@ public class ImageService
     {
         if (string.IsNullOrEmpty(filePath)) return string.Empty;
 
-        var uploadParams = new ImageUploadParams()
+        try
         {
-            File = new FileDescription(filePath),
-            Folder = "lazada_products"
-        };
+            var uploadParams = new ImageUploadParams()
+            {
+                File = new FileDescription(filePath),
+                Folder = "lazada_products"
+            };
 
-        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-        return uploadResult?.SecureUrl?.ToString() ?? string.Empty;
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            
+            if (uploadResult.Error != null)
+            {
+                Console.WriteLine($"Cloudinary MAUI Error: {uploadResult.Error.Message}");
+                return string.Empty;
+            }
+
+            return uploadResult?.SecureUrl?.ToString() ?? string.Empty;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Image Upload MAUI Exception: {ex.Message}");
+            return string.Empty;
+        }
     }
 }

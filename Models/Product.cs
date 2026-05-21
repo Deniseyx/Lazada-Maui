@@ -20,4 +20,8 @@ public class Product
     // For UI display
     public string PriceFormatted => $"₱{Price:N0}";
     public string RatingFormatted => $"★ {Rating:F2}";
+
+    public string DisplayImageUrl => string.IsNullOrEmpty(ImageUrl) 
+        ? "https://placehold.co/600x400?text=No+Image" 
+        : ImageUrl;
 }

@@ -20,6 +20,9 @@ public class AuthService
     public string? UserDisplayName => _authClient.User?.Info?.DisplayName;
     public bool IsLoggedIn => !string.IsNullOrEmpty(UserId);
 
+    public event Action? OnChange;
+    private void NotifyStateChanged() => OnChange?.Invoke();
+
     public AuthService(ILocalStorageService localStorage)
     {
         _localStorage = localStorage;
@@ -54,6 +57,8 @@ public class AuthService
                 await Logout();
             }
         }
+        
+        NotifyStateChanged();
     }
 
     public async Task<string> GetFreshTokenAsync()
@@ -127,16 +132,26 @@ public class AuthService
 
     public async Task Logout()
     {
-        if (!IsAdmin)
+        try
         {
-            _authClient.SignOut();
+            if (!IsAdmin && _authClient.User != null)
+            {
+                _authClient.SignOut();
+            }
         }
+        catch (Exception ex)
+        {
+            // Log or ignore - the goal is to ensure local state is cleared regardless
+            Console.WriteLine($"SignOut error: {ex.Message}");
+        }
+
         UserToken = null;
         UserId = null;
         IsAdmin = false;
         await _localStorage.RemoveItemAsync("firebase_user_token");
         await _localStorage.RemoveItemAsync("firebase_user_id");
         await _localStorage.RemoveItemAsync("is_admin");
+        NotifyStateChanged();
     }
 
     private async Task SaveStateToLocalStorage()
@@ -144,6 +159,7 @@ public class AuthService
         await _localStorage.SetItemAsync("firebase_user_token", UserToken);
         await _localStorage.SetItemAsync("firebase_user_id", UserId);
         await _localStorage.SetItemAsync("is_admin", IsAdmin);
+        NotifyStateChanged();
     }
 
     private string GetFriendlyErrorMessage(string technicalMessage)

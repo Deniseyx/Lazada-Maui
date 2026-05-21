@@ -17,7 +17,4 @@ builder.Services.AddScoped<ImageService>();
 
 var host = builder.Build();
 
-var authService = host.Services.GetRequiredService<AuthService>();
-await authService.InitializeAsync();
-
 await host.RunAsync();
