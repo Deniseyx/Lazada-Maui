@@ -1,6 +1,8 @@
 @page "/"
 @using Lazada_Isagunde.Blazor.Services
+@using Lazada_Isagunde.Blazor.Models
 @inject AuthService AuthService
+@inject FirebaseService FirebaseService
 @inject NavigationManager Navigation
 
 <PageTitle>Welcome to Lazada</PageTitle>
@@ -23,15 +25,71 @@
     </div>
 </div>
 
+<div class="container py-5">
+    <div class="category-strip mb-4">
+        @foreach (var cat in categories)
+        {
+            <div class="category-item @(string.Equals(selectedCategory, cat, StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                 @onclick="() => selectedCategory = cat"
+                 role="button">
+                <div class="category-icon">
+                    @GetCategoryIcon(cat)
+                </div>
+                <div class="category-label">@cat</div>
+            </div>
+        }
+    </div>
+
+    <div class="section-header mb-4">
+        <h2 class="section-title">Flash Sale</h2>
+    </div>
+
+    @if (products == null)
+    {
+        <div class="d-flex justify-content-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading products...</span>
+            </div>
+        </div>
+    }
+    else if (!FilteredProducts.Any())
+    {
+        <div class="alert alert-info">
+            No products found in this category.
+        </div>
+    }
+    else
+    {
+        <div class="product-grid">
+            @foreach (var product in FilteredProducts)
+            {
+                <div class="product-card" @onclick='() => Navigation.NavigateTo($"/product/{product.Id}")'>
+                    <div class="product-image-wrapper">
+                        <img src="@product.DisplayImageUrl" 
+                             class="product-image" 
+                             alt="@product.Title" 
+                             onerror="this.src='https://placehold.co/600x400?text=No+Image'" />
+                    </div>
+                    <div class="product-info">
+                        <h5 class="product-title">@product.Title</h5>
+                        <p class="product-price">@product.PriceFormatted</p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
 <style>
     .landing-container {
-        min-height: calc(100vh - 150px);
+        min-height: 60vh;
         background-color: var(--lazada-bg);
     }
     .landing-content {
         max-width: 480px;
         width: 100%;
         padding: 60px 40px !important;
+        z-index: 10;
     }
     .brand-title {
         font-size: 3.5rem;
@@ -76,21 +134,123 @@
         border-color: #dee2e6;
         color: var(--lazada-orange);
     }
+
+    /* Dashboard Styles for Consistency */
+    .section-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #000;
+        margin-bottom: 20px;
+    }
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(188px, 1fr));
+        gap: 12px;
+    }
+    .product-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        height: 310px;
+        border: 1px solid #f0f0f0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .product-card:hover {
+        box-shadow: var(--card-shadow);
+        transform: translateY(-4px);
+        border-color: #e0e0e0;
+    }
+    .product-image-wrapper {
+        height: 200px;
+        overflow: hidden;
+        background-color: #ffffff;
+    }
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .product-info {
+        padding: 8px 10px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    .product-title {
+        font-size: 14px;
+        line-height: 18px;
+        color: #212121;
+        margin-bottom: 4px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        height: 36px;
+        font-weight: normal;
+    }
+    .product-price {
+        color: var(--lazada-orange);
+        font-size: 18px;
+        font-weight: 500;
+        margin-top: auto;
+    }
 </style>
 
 @code {
-    protected override void OnInitialized()
+    private List<Product>? products;
+    private string selectedCategory = "General";
+    private static readonly string[] categories = { "General", "Electronics", "Fashion", "Home", "Health", "Male Clothes", "Female Clothes", "Kids" };
+
+    private IEnumerable<Product> FilteredProducts => 
+        (products ?? new())
+        .Where(p => string.Equals(selectedCategory, "General", StringComparison.OrdinalIgnoreCase) 
+                    || string.Equals(p.Category, selectedCategory, StringComparison.OrdinalIgnoreCase));
+
+    protected override async Task OnInitializedAsync()
     {
         if (AuthService.IsLoggedIn)
         {
             if (AuthService.IsAdmin)
             {
                 Navigation.NavigateTo("/admin");
+                return;
             }
             else
             {
                 Navigation.NavigateTo("/dashboard");
+                return;
             }
         }
+
+        try 
+        {
+            products = await FirebaseService.GetProductsAsync("Approved");
+        }
+        catch (Exception)
+        {
+            products = new List<Product>();
+        }
     }
+
+    private RenderFragment GetCategoryIcon(string cat) => builder =>
+    {
+        builder.OpenElement(0, "span");
+        builder.AddContent(1, cat switch
+        {
+            "General" => "🛒",
+            "Electronics" => "💻",
+            "Fashion" => "✨",
+            "Home" => "🏠",
+            "Health" => "💊",
+            "Male Clothes" => "👕",
+            "Female Clothes" => "👗",
+            "Kids" => "🧸",
+            _ => "📦"
+        });
+        builder.CloseElement();
+    };
 }
