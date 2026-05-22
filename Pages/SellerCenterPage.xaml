@@ -164,7 +164,6 @@
                                         <VerticalStackLayout Grid.Column="1" Margin="10,0" VerticalOptions="Center">
                                             <Label Text="{Binding Title}" FontAttributes="Bold" MaxLines="1" TextColor="Black" />
                                             <Label Text="{Binding PriceFormatted}" TextColor="{StaticResource LazadaOrange}" />
-                                            <Label Text="{Binding Status}" FontSize="11" TextColor="{StaticResource Gray500}" FontAttributes="Italic" />
                                         </VerticalStackLayout>
                                         <Button Grid.Column="2" 
                                                 Text="🗑️" 
