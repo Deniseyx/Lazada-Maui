@@ -31,7 +31,9 @@
         {
             <div class="category-item @(string.Equals(selectedCategory, cat, StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
                  @onclick="() => selectedCategory = cat"
-                 role="button">
+                 role="button"
+                 tabindex="0"
+                 @onkeydown="@(e => HandleCategoryKeyDown(e, cat))">
                 <div class="category-icon">
                     @GetCategoryIcon(cat)
                 </div>
@@ -63,7 +65,11 @@
         <div class="product-grid">
             @foreach (var product in FilteredProducts)
             {
-                <div class="product-card" @onclick='() => Navigation.NavigateTo($"/product/{product.Id}")'>
+                <div class="product-card" 
+                     @onclick='() => Navigation.NavigateTo($"/product/{product.Id}")'
+                     role="button"
+                     tabindex="0"
+                     @onkeydown='@(e => HandleProductKeyDown(e, product.Id))'>
                     <div class="product-image-wrapper">
                         <img src="@product.DisplayImageUrl" 
                              class="product-image" 
@@ -233,6 +239,22 @@
         catch (Exception)
         {
             products = new List<Product>();
+        }
+    }
+
+    private void HandleCategoryKeyDown(KeyboardEventArgs e, string cat)
+    {
+        if (e.Key == "Enter" || e.Key == " ")
+        {
+            selectedCategory = cat;
+        }
+    }
+
+    private void HandleProductKeyDown(KeyboardEventArgs e, string? productId)
+    {
+        if ((e.Key == "Enter" || e.Key == " ") && !string.IsNullOrEmpty(productId))
+        {
+            Navigation.NavigateTo($"/product/{productId}");
         }
     }
 

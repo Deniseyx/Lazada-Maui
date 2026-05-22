@@ -11,21 +11,15 @@
 
 <div class="dashboard-container">
     <div class="category-strip">
-        @foreach (var cat in new[] { "General", "Electronics", "Fashion", "Home", "Health", "Male Clothes", "Female Clothes", "Kids" })
+        @foreach (var cat in categories)
         {
-            <div class="category-item @(selectedCategory == cat ? "active" : "")" @onclick="() => selectedCategory = cat">
+            <div class="category-item @(string.Equals(selectedCategory, cat, StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                 @onclick="() => selectedCategory = cat"
+                 role="button"
+                 tabindex="0"
+                 @onkeydown="@(e => HandleCategoryKeyDown(e, cat))">
                 <div class="category-icon">
-                    @switch (cat)
-                    {
-                        case "General": <span>🛒</span> break;
-                        case "Electronics": <span>💻</span> break;
-                        case "Fashion": <span>✨</span> break;
-                        case "Home": <span>🏠</span> break;
-                        case "Health": <span>💊</span> break;
-                        case "Male Clothes": <span>👕</span> break;
-                        case "Female Clothes": <span>👗</span> break;
-                        case "Kids": <span>🧸</span> break;
-                    }
+                    @GetCategoryIcon(cat)
                 </div>
                 <div class="category-label">@cat</div>
             </div>
@@ -55,7 +49,11 @@
         <div class="product-grid">
             @foreach (var product in FilteredProducts)
             {
-                <div class="product-card" @onclick="() => NavigateToDetail(product.Id)">
+                <div class="product-card" 
+                     @onclick="() => NavigateToDetail(product.Id)"
+                     role="button"
+                     tabindex="0"
+                     @onkeydown='@(e => HandleProductKeyDown(e, product.Id))'>
                     <div class="product-image-wrapper">
                         <img src="@product.DisplayImageUrl" 
                              class="product-image" 
@@ -77,10 +75,13 @@
     private string searchQuery = "";
     private string selectedCategory = "General";
 
+    private static readonly string[] categories = { "General", "Electronics", "Fashion", "Home", "Health", "Male Clothes", "Female Clothes", "Kids" };
+
     private IEnumerable<Product> FilteredProducts => 
         (products ?? new())
         .Where(p => (string.IsNullOrWhiteSpace(searchQuery) || (p.Title != null && p.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)))
-                    && (selectedCategory == "General" || p.Category == selectedCategory));
+                    && (string.Equals(selectedCategory, "General", StringComparison.OrdinalIgnoreCase) 
+                        || string.Equals(p.Category, selectedCategory, StringComparison.OrdinalIgnoreCase)));
 
     protected override async Task OnInitializedAsync()
     {
@@ -106,6 +107,40 @@
         UpdateSearchQuery();
         StateHasChanged();
     }
+
+    private void HandleCategoryKeyDown(KeyboardEventArgs e, string cat)
+    {
+        if (e.Key == "Enter" || e.Key == " ")
+        {
+            selectedCategory = cat;
+        }
+    }
+
+    private void HandleProductKeyDown(KeyboardEventArgs e, string? productId)
+    {
+        if ((e.Key == "Enter" || e.Key == " ") && !string.IsNullOrEmpty(productId))
+        {
+            NavigateToDetail(productId);
+        }
+    }
+
+    private RenderFragment GetCategoryIcon(string cat) => builder =>
+    {
+        builder.OpenElement(0, "span");
+        builder.AddContent(1, cat switch
+        {
+            "General" => "🛒",
+            "Electronics" => "💻",
+            "Fashion" => "✨",
+            "Home" => "🏠",
+            "Health" => "💊",
+            "Male Clothes" => "👕",
+            "Female Clothes" => "👗",
+            "Kids" => "🧸",
+            _ => "📦"
+        });
+        builder.CloseElement();
+    };
 
     private void UpdateSearchQuery()
     {

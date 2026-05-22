@@ -64,25 +64,43 @@ public partial class DashboardPage : ContentPage
 
     private void OnCategoryTapped(object sender, EventArgs e)
     {
-        if (sender is BindableObject view && view.BindingContext is string category)
+        string category = "";
+        
+        if (sender is View view && view.GestureRecognizers.Count > 0)
         {
-            _selectedCategory = category;
-            ApplyFilter();
-            UpdateCategoryUI();
+            var tgr = view.GestureRecognizers[0] as TapGestureRecognizer;
+            category = tgr?.CommandParameter as string ?? "";
         }
-        else if (sender is View v && v.GestureRecognizers.FirstOrDefault() is TapGestureRecognizer tgr && tgr.CommandParameter is string cat)
-        {
-            // Alternative way if BindingContext isn't set yet
-            _selectedCategory = cat;
-            ApplyFilter();
-            UpdateCategoryUI();
-        }
+
+        if (string.IsNullOrEmpty(category)) return;
+
+        _selectedCategory = category;
+        ApplyFilter();
+        UpdateCategoryUI();
     }
 
     private void UpdateCategoryUI()
     {
-        // CategoryList is added in Task 2 XAML updates
-        // This method will be expanded once the UI element exists
+        if (CategoryStrip == null) return;
+
+        foreach (var child in CategoryStrip.Children)
+        {
+            if (child is VerticalStackLayout vsl && vsl.GestureRecognizers.Count > 0)
+            {
+                var tgr = vsl.GestureRecognizers[0] as TapGestureRecognizer;
+                string cat = tgr?.CommandParameter as string ?? "";
+                
+                bool isSelected = cat == _selectedCategory;
+                VisualStateManager.GoToState(vsl, isSelected ? "Selected" : "Normal");
+                
+                // Toggle the indicator BoxView visibility
+                var indicator = vsl.Children.OfType<BoxView>().FirstOrDefault();
+                if (indicator != null)
+                {
+                    indicator.IsVisible = isSelected;
+                }
+            }
+        }
     }
 
     private async void OnProfileClicked(object sender, EventArgs e)

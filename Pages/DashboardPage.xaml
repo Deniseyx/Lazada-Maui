@@ -58,15 +58,116 @@
         </Grid>
     </Shell.TitleView>
 
-    <Grid WidthRequest="360" HorizontalOptions="Center">
+    <ContentPage.Resources>
+        <Style x:Key="CategoryItemStyle" TargetType="VerticalStackLayout">
+            <Setter Property="Spacing" Value="2" />
+            <Setter Property="WidthRequest" Value="70" />
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="Opacity" Value="0.6" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="Opacity" Value="1.0" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid HorizontalOptions="Center" MaximumWidthRequest="500">
         <ScrollView>
             <VerticalStackLayout Padding="15,20,15,15" Spacing="15">
                 <!-- Search Bar -->
                 <Frame BackgroundColor="White" Padding="0" HasShadow="False" CornerRadius="10" HeightRequest="45">
-                    <Entry Placeholder="Search products..." Margin="10,0" TextColor="Black" />
+                    <Entry Placeholder="Search products..." 
+                           Margin="10,0" 
+                           TextColor="Black" 
+                           TextChanged="OnSearchTextChanged"/>
                 </Frame>
 
+                <!-- Category Grid (2x4) -->
+                <Grid x:Name="CategoryStrip" RowDefinitions="Auto, Auto" ColumnDefinitions="*, *, *, *" ColumnSpacing="5" RowSpacing="10" Padding="0,5">
+                    <!-- Row 0 -->
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="0" Style="{StaticResource CategoryItemStyle}">
+                        <VerticalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="General" />
+                        </VerticalStackLayout.GestureRecognizers>
+                        <Label Text="🛒" FontSize="22" HorizontalOptions="Center" />
+                        <Label Text="General" FontSize="10" HorizontalOptions="Center" TextColor="Black" />
+                        <BoxView HeightRequest="2" Color="{StaticResource LazadaOrange}" HorizontalOptions="Fill" Margin="10,0" IsVisible="True" />
+                    </VerticalStackLayout>
 
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="1" Style="{StaticResource CategoryItemStyle}">
+                        <VerticalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Electronics" />
+                        </VerticalStackLayout.GestureRecognizers>
+                        <Label Text="💻" FontSize="22" HorizontalOptions="Center" />
+                        <Label Text="Electronics" FontSize="10" HorizontalOptions="Center" TextColor="Black" />
+                        <BoxView HeightRequest="2" Color="{StaticResource LazadaOrange}" HorizontalOptions="Fill" Margin="10,0" IsVisible="False" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="2" Style="{StaticResource CategoryItemStyle}">
+                        <VerticalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Fashion" />
+                        </VerticalStackLayout.GestureRecognizers>
+                        <Label Text="✨" FontSize="22" HorizontalOptions="Center" />
+                        <Label Text="Fashion" FontSize="10" HorizontalOptions="Center" TextColor="Black" />
+                        <BoxView HeightRequest="2" Color="{StaticResource LazadaOrange}" HorizontalOptions="Fill" Margin="10,0" IsVisible="False" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="3" Style="{StaticResource CategoryItemStyle}">
+                        <VerticalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Home" />
+                        </VerticalStackLayout.GestureRecognizers>
+                        <Label Text="🏠" FontSize="22" HorizontalOptions="Center" />
+                        <Label Text="Home" FontSize="10" HorizontalOptions="Center" TextColor="Black" />
+                        <BoxView HeightRequest="2" Color="{StaticResource LazadaOrange}" HorizontalOptions="Fill" Margin="10,0" IsVisible="False" />
+                    </VerticalStackLayout>
+
+                    <!-- Row 1 -->
+                    <VerticalStackLayout Grid.Row="1" Grid.Column="0" Style="{StaticResource CategoryItemStyle}">
+                        <VerticalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Health" />
+                        </VerticalStackLayout.GestureRecognizers>
+                        <Label Text="💊" FontSize="22" HorizontalOptions="Center" />
+                        <Label Text="Health" FontSize="10" HorizontalOptions="Center" TextColor="Black" />
+                        <BoxView HeightRequest="2" Color="{StaticResource LazadaOrange}" HorizontalOptions="Fill" Margin="10,0" IsVisible="False" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Row="1" Grid.Column="1" Style="{StaticResource CategoryItemStyle}">
+                        <VerticalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Male Clothes" />
+                        </VerticalStackLayout.GestureRecognizers>
+                        <Label Text="👕" FontSize="22" HorizontalOptions="Center" />
+                        <Label Text="Male" FontSize="10" HorizontalOptions="Center" TextColor="Black" />
+                        <BoxView HeightRequest="2" Color="{StaticResource LazadaOrange}" HorizontalOptions="Fill" Margin="10,0" IsVisible="False" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Row="1" Grid.Column="2" Style="{StaticResource CategoryItemStyle}">
+                        <VerticalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Female Clothes" />
+                        </VerticalStackLayout.GestureRecognizers>
+                        <Label Text="👗" FontSize="22" HorizontalOptions="Center" />
+                        <Label Text="Female" FontSize="10" HorizontalOptions="Center" TextColor="Black" />
+                        <BoxView HeightRequest="2" Color="{StaticResource LazadaOrange}" HorizontalOptions="Fill" Margin="10,0" IsVisible="False" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Row="1" Grid.Column="3" Style="{StaticResource CategoryItemStyle}">
+                        <VerticalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Kids" />
+                        </VerticalStackLayout.GestureRecognizers>
+                        <Label Text="🧸" FontSize="22" HorizontalOptions="Center" />
+                        <Label Text="Kids" FontSize="10" HorizontalOptions="Center" TextColor="Black" />
+                        <BoxView HeightRequest="2" Color="{StaticResource LazadaOrange}" HorizontalOptions="Fill" Margin="10,0" IsVisible="False" />
+                    </VerticalStackLayout>
+                </Grid>
 
                 <!-- Product List Header -->
                 <Label Text="Just For You" FontSize="20" FontAttributes="Bold" TextColor="Black" />
