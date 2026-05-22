@@ -115,10 +115,10 @@
 
                     <VerticalStackLayout Grid.Row="0" Grid.Column="2" Style="{StaticResource CategoryItemStyle}">
                         <VerticalStackLayout.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Fashion" />
+                            <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Jewelry" />
                         </VerticalStackLayout.GestureRecognizers>
                         <Label Text="✨" FontSize="22" HorizontalOptions="Center" />
-                        <Label Text="Fashion" FontSize="10" HorizontalOptions="Center" TextColor="Black" />
+                        <Label Text="Jewelry" FontSize="10" HorizontalOptions="Center" TextColor="Black" />
                         <BoxView HeightRequest="2" Color="{StaticResource LazadaOrange}" HorizontalOptions="Fill" Margin="10,0" IsVisible="False" />
                     </VerticalStackLayout>
 
@@ -170,7 +170,7 @@
                 </Grid>
 
                 <!-- Product List Header -->
-                <Label Text="Just For You" FontSize="20" FontAttributes="Bold" TextColor="Black" />
+                <Label x:Name="SectionHeaderLabel" Text="General" FontSize="20" FontAttributes="Bold" TextColor="Black" />
 
                 <!-- Dynamic Product Grid -->
                 <CollectionView x:Name="ProductsCollection"

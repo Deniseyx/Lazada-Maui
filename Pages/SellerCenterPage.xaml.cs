@@ -147,13 +147,48 @@ public partial class SellerCenterPage : ContentPage
     private string GetSelectedCategory()
     {
         if (ElectronicsCb.IsChecked) return "Electronics";
-        if (FashionCb.IsChecked) return "Fashion";
+        if (JewelryCb.IsChecked) return "Jewelry";
         if (HomeCb.IsChecked) return "Home";
         if (HealthCb.IsChecked) return "Health";
         if (ClothesMaleCb.IsChecked) return "Male Clothes";
         if (ClothesFemaleCb.IsChecked) return "Female Clothes";
         if (KidsCb.IsChecked) return "Kids";
         return "General";
+    }
+
+    private void OnCategoryCheckedChanged(object sender, CheckedChangedEventArgs e)
+    {
+        if (e.Value)
+        {
+            var activeCb = sender as CheckBox;
+            if (activeCb == null) return;
+
+            // Unsubscribe to avoid recursive event triggering
+            ElectronicsCb.CheckedChanged -= OnCategoryCheckedChanged;
+            JewelryCb.CheckedChanged -= OnCategoryCheckedChanged;
+            HomeCb.CheckedChanged -= OnCategoryCheckedChanged;
+            HealthCb.CheckedChanged -= OnCategoryCheckedChanged;
+            ClothesMaleCb.CheckedChanged -= OnCategoryCheckedChanged;
+            ClothesFemaleCb.CheckedChanged -= OnCategoryCheckedChanged;
+            KidsCb.CheckedChanged -= OnCategoryCheckedChanged;
+
+            if (ElectronicsCb != activeCb) ElectronicsCb.IsChecked = false;
+            if (JewelryCb != activeCb) JewelryCb.IsChecked = false;
+            if (HomeCb != activeCb) HomeCb.IsChecked = false;
+            if (HealthCb != activeCb) HealthCb.IsChecked = false;
+            if (ClothesMaleCb != activeCb) ClothesMaleCb.IsChecked = false;
+            if (ClothesFemaleCb != activeCb) ClothesFemaleCb.IsChecked = false;
+            if (KidsCb != activeCb) KidsCb.IsChecked = false;
+
+            // Resubscribe
+            ElectronicsCb.CheckedChanged += OnCategoryCheckedChanged;
+            JewelryCb.CheckedChanged += OnCategoryCheckedChanged;
+            HomeCb.CheckedChanged += OnCategoryCheckedChanged;
+            HealthCb.CheckedChanged += OnCategoryCheckedChanged;
+            ClothesMaleCb.CheckedChanged += OnCategoryCheckedChanged;
+            ClothesFemaleCb.CheckedChanged += OnCategoryCheckedChanged;
+            KidsCb.CheckedChanged += OnCategoryCheckedChanged;
+        }
     }
     #endregion
 

@@ -33,6 +33,24 @@ public partial class DashboardPage : ContentPage
         try
         {
             var products = await _firebaseService.GetProductsAsync();
+            
+            // Run database migration from Fashion to Jewelry
+            bool migrated = false;
+            foreach (var p in products)
+            {
+                if (string.Equals(p.Category, "Fashion", StringComparison.OrdinalIgnoreCase))
+                {
+                    p.Category = "Jewelry";
+                    await _firebaseService.UpdateProductAsync(p);
+                    migrated = true;
+                }
+            }
+            if (migrated)
+            {
+                // Reload after migrating
+                products = await _firebaseService.GetProductsAsync();
+            }
+
             _allProducts = products.Where(p => p.Status == "Approved").ToList();
             ApplyFilter();
         }
@@ -42,10 +60,23 @@ public partial class DashboardPage : ContentPage
         }
     }
 
+    private string GetCategoryDisplayName(string category) => category switch
+    {
+        "Male Clothes" => "Male",
+        "Female Clothes" => "Female",
+        _ => category
+    };
+
     private void ApplyFilter()
     {
+        if (SectionHeaderLabel != null)
+        {
+            SectionHeaderLabel.Text = GetCategoryDisplayName(_selectedCategory);
+        }
+
         var filtered = _allProducts.Where(p => 
-            (_selectedCategory == "General" || p.Category == _selectedCategory) &&
+            (string.Equals(_selectedCategory, "General", StringComparison.OrdinalIgnoreCase) || 
+             string.Equals(p.Category, _selectedCategory, StringComparison.OrdinalIgnoreCase)) &&
             (string.IsNullOrWhiteSpace(_searchText) || p.Title.Contains(_searchText, StringComparison.OrdinalIgnoreCase))
         ).ToList();
 

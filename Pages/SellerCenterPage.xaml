@@ -50,31 +50,31 @@
                     <Label Text="Categories" FontAttributes="Bold" Margin="0,10,0,0" TextColor="Black" />
                     <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="10">
                         <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="10">
-                            <CheckBox x:Name="ElectronicsCb" Color="{StaticResource LazadaOrange}" />
+                            <CheckBox x:Name="ElectronicsCb" Color="{StaticResource LazadaOrange}" CheckedChanged="OnCategoryCheckedChanged" />
                             <Label Text="Electronics" VerticalOptions="Center" TextColor="Black" />
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Grid.Row="0" Grid.Column="1" Spacing="10">
-                            <CheckBox x:Name="FashionCb" Color="{StaticResource LazadaOrange}" />
-                            <Label Text="Fashion" VerticalOptions="Center" TextColor="Black" />
+                            <CheckBox x:Name="JewelryCb" Color="{StaticResource LazadaOrange}" CheckedChanged="OnCategoryCheckedChanged" />
+                            <Label Text="Jewelry" VerticalOptions="Center" TextColor="Black" />
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Spacing="10">
-                            <CheckBox x:Name="HomeCb" Color="{StaticResource LazadaOrange}" />
+                            <CheckBox x:Name="HomeCb" Color="{StaticResource LazadaOrange}" CheckedChanged="OnCategoryCheckedChanged" />
                             <Label Text="Home" VerticalOptions="Center" TextColor="Black" />
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Spacing="10">
-                            <CheckBox x:Name="HealthCb" Color="{StaticResource LazadaOrange}" />
+                            <CheckBox x:Name="HealthCb" Color="{StaticResource LazadaOrange}" CheckedChanged="OnCategoryCheckedChanged" />
                             <Label Text="Health" VerticalOptions="Center" TextColor="Black" />
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Spacing="10">
-                            <CheckBox x:Name="ClothesMaleCb" Color="{StaticResource LazadaOrange}" />
+                            <CheckBox x:Name="ClothesMaleCb" Color="{StaticResource LazadaOrange}" CheckedChanged="OnCategoryCheckedChanged" />
                             <Label Text="Male Clothes" VerticalOptions="Center" TextColor="Black" />
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Grid.Row="2" Grid.Column="1" Spacing="10">
-                            <CheckBox x:Name="ClothesFemaleCb" Color="{StaticResource LazadaOrange}" />
+                            <CheckBox x:Name="ClothesFemaleCb" Color="{StaticResource LazadaOrange}" CheckedChanged="OnCategoryCheckedChanged" />
                             <Label Text="Female Clothes" VerticalOptions="Center" TextColor="Black" />
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Grid.Row="3" Grid.Column="0" Spacing="10">
-                            <CheckBox x:Name="KidsCb" Color="{StaticResource LazadaOrange}" />
+                            <CheckBox x:Name="KidsCb" Color="{StaticResource LazadaOrange}" CheckedChanged="OnCategoryCheckedChanged" />
                             <Label Text="Kids" VerticalOptions="Center" TextColor="Black" />
                         </HorizontalStackLayout>
                     </Grid>

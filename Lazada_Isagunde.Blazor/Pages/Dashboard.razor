@@ -21,13 +21,13 @@
                 <div class="category-icon">
                     @GetCategoryIcon(cat)
                 </div>
-                <div class="category-label">@cat</div>
+                <div class="category-label">@GetCategoryDisplayName(cat)</div>
             </div>
         }
     </div>
 
     <div class="section-header mb-4">
-        <h2 class="section-title">Just For You</h2>
+        <h2 class="section-title">@GetCategoryDisplayName(selectedCategory)</h2>
     </div>
 
     @if (products == null)
@@ -71,11 +71,18 @@
 </div>
 
 @code {
+    private string GetCategoryDisplayName(string category) => category switch
+    {
+        "Male Clothes" => "Male",
+        "Female Clothes" => "Female",
+        _ => category
+    };
+
     private List<Product>? products;
     private string searchQuery = "";
     private string selectedCategory = "General";
 
-    private static readonly string[] categories = { "General", "Electronics", "Fashion", "Home", "Health", "Male Clothes", "Female Clothes", "Kids" };
+    private static readonly string[] categories = { "General", "Electronics", "Jewelry", "Home", "Health", "Male Clothes", "Female Clothes", "Kids" };
 
     private IEnumerable<Product> FilteredProducts => 
         (products ?? new())
@@ -100,6 +107,19 @@
         Navigation.LocationChanged += HandleLocationChanged;
         UpdateSearchQuery();
         await LoadProducts();
+        try
+        {
+            var allProducts = await FirebaseService.GetProductsAsync();
+            foreach (var p in allProducts)
+            {
+                if (string.Equals(p.Category, "Fashion", StringComparison.OrdinalIgnoreCase))
+                {
+                    p.Category = "Jewelry";
+                    await FirebaseService.UpdateProductAsync(p);
+                }
+            }
+        }
+        catch {}
     }
 
     private void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
@@ -131,7 +151,7 @@
         {
             "General" => "🛒",
             "Electronics" => "💻",
-            "Fashion" => "✨",
+            "Jewelry" => "✨",
             "Home" => "🏠",
             "Health" => "💊",
             "Male Clothes" => "👕",
