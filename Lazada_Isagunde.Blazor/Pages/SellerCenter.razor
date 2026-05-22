@@ -216,7 +216,7 @@
         var profile = await FirebaseService.GetUserProfileAsync(AuthService.UserId!);
         newProduct.SellerId = AuthService.UserId!;
         newProduct.SellerName = string.IsNullOrEmpty(profile.FullName) ? "Official Store" : profile.FullName;
-        newProduct.Status = "Pending";
+        newProduct.Status = "Approved";
 
         await FirebaseService.AddProductAsync(newProduct);
         

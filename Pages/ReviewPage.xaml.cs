@@ -60,11 +60,7 @@ public partial class ReviewPage : ContentPage
             SubmitButton.IsEnabled = false;
 
             string buyerName = "Customer";
-            if (AuthService.IsAdmin)
-            {
-                buyerName = "Admin User";
-            }
-            else if (!string.IsNullOrEmpty(AuthService.UserId))
+            if (!string.IsNullOrEmpty(AuthService.UserId))
             {
                 try
                 {

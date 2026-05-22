@@ -14,7 +14,6 @@ public class AuthService
 
     public string? UserToken { get; private set; }
     public string? UserId { get; private set; }
-    public bool IsAdmin { get; private set; }
 
     public string? UserEmail => _authClient.User?.Info?.Email;
     public string? UserDisplayName => _authClient.User?.Info?.DisplayName;
@@ -43,7 +42,6 @@ public class AuthService
     {
         UserToken = await _localStorage.GetItemAsync<string>("firebase_user_token");
         UserId = await _localStorage.GetItemAsync<string>("firebase_user_id");
-        IsAdmin = await _localStorage.GetItemAsync<bool>("is_admin");
 
         if (_authClient.User != null)
         {
@@ -79,7 +77,6 @@ public class AuthService
             var userCredential = await _authClient.CreateUserWithEmailAndPasswordAsync(email, password);
             UserToken = await userCredential.User.GetIdTokenAsync();
             UserId = userCredential.User.Uid;
-            IsAdmin = false;
 
             await SaveStateToLocalStorage();
             return (true, string.Empty);
@@ -92,21 +89,11 @@ public class AuthService
 
     public async Task<(bool Success, string ErrorMessage)> LoginUser(string email, string password)
     {
-        if (email == "adminlogin" && password == "admin123")
-        {
-            IsAdmin = true;
-            UserId = "ADMIN_ID";
-            UserToken = "ADMIN_TOKEN";
-            await SaveStateToLocalStorage();
-            return (true, string.Empty);
-        }
-
         try
         {
             var userCredential = await _authClient.SignInWithEmailAndPasswordAsync(email, password);
             UserToken = await userCredential.User.GetIdTokenAsync();
             UserId = userCredential.User.Uid;
-            IsAdmin = false;
 
             await SaveStateToLocalStorage();
             return (true, string.Empty);
@@ -134,7 +121,7 @@ public class AuthService
     {
         try
         {
-            if (!IsAdmin && _authClient.User != null)
+            if (_authClient.User != null)
             {
                 _authClient.SignOut();
             }
@@ -147,10 +134,8 @@ public class AuthService
 
         UserToken = null;
         UserId = null;
-        IsAdmin = false;
         await _localStorage.RemoveItemAsync("firebase_user_token");
         await _localStorage.RemoveItemAsync("firebase_user_id");
-        await _localStorage.RemoveItemAsync("is_admin");
         NotifyStateChanged();
     }
 
@@ -158,7 +143,6 @@ public class AuthService
     {
         await _localStorage.SetItemAsync("firebase_user_token", UserToken);
         await _localStorage.SetItemAsync("firebase_user_id", UserId);
-        await _localStorage.SetItemAsync("is_admin", IsAdmin);
         NotifyStateChanged();
     }
 

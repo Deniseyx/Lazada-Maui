@@ -49,7 +49,7 @@ public class FirebaseService
 
     public async Task AddProductAsync(Product product)
     {
-        product.Status = "Pending";
+        product.Status = "Approved";
         await _client
             .Child("products")
             .PostAsync(product);

@@ -125,7 +125,7 @@ public partial class SellerCenterPage : ContentPage
             };
 
             await _firebaseService.AddProductAsync(newProduct);
-            await DisplayAlert("Success", "Added successfully, awaiting admin approval", "OK");
+            await DisplayAlert("Success", "Product listed successfully!", "OK");
             
             // Reset form
             ProductNameEntry.Text = string.Empty;

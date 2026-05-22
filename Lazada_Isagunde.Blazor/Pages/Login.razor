@@ -58,14 +58,7 @@
         var result = await AuthService.LoginUser(email, password);
         if (result.Success)
         {
-            if (AuthService.IsAdmin)
-            {
-                Navigation.NavigateTo("/admin");
-            }
-            else
-            {
-                Navigation.NavigateTo("/dashboard");
-            }
+            Navigation.NavigateTo("/dashboard");
         }
         else
         {

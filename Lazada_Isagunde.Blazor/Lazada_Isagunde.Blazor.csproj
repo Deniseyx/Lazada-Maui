@@ -17,4 +17,9 @@
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="9.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Remove="Layout\AdminLayout.razor" />
+    <Content Remove="Pages\Admin\Dashboard.razor" />
+  </ItemGroup>
+
 </Project>

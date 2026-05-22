@@ -72,4 +72,9 @@
 		<DefaultItemExcludes>$(DefaultItemExcludes);Lazada_Isagunde.Blazor\**</DefaultItemExcludes>
 	</PropertyGroup>
 
+	<ItemGroup>
+		<Compile Remove="Pages\AdminDashboardPage.xaml.cs" />
+		<MauiXaml Remove="Pages\AdminDashboardPage.xaml" />
+	</ItemGroup>
+
 </Project>

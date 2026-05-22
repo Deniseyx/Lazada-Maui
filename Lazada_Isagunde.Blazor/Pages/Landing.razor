@@ -227,16 +227,8 @@
     {
         if (AuthService.IsLoggedIn)
         {
-            if (AuthService.IsAdmin)
-            {
-                Navigation.NavigateTo("/admin");
-                return;
-            }
-            else
-            {
-                Navigation.NavigateTo("/dashboard");
-                return;
-            }
+            Navigation.NavigateTo("/dashboard");
+            return;
         }
 
         try 

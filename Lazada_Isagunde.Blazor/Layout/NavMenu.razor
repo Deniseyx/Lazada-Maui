@@ -14,46 +14,31 @@
         else
         {
             <div class="header-left">
-                <a class="navbar-brand" href="@(AuthService.IsLoggedIn ? (AuthService.IsAdmin ? "/admin" : "/dashboard") : "/")">Lazada</a>
+                <a class="navbar-brand" href="@(AuthService.IsLoggedIn ? "/dashboard" : "/")">Lazada</a>
             </div>
             
-            @if (!AuthService.IsAdmin)
-            {
-                <div class="header-center">
-                    <div class="search-container">
-                        <input type="text" class="search-input" placeholder="Search products..." @bind="searchQuery" @onkeyup="HandleSearch" />
-                        <button class="search-button" @onclick="ExecuteSearch">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </div>
+            <div class="header-center">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search products..." @bind="searchQuery" @onkeyup="HandleSearch" />
+                    <button class="search-button" @onclick="ExecuteSearch">
+                        <i class="bi bi-search"></i>
+                    </button>
                 </div>
-            }
+            </div>
 
             <div class="header-right">
                 @if (AuthService.IsLoggedIn)
                 {
-                    @if (!AuthService.IsAdmin)
-                    {
-                        <a href="/cart" class="header-icon-item" title="Cart">
-                            <div class="icon-circle">
-                                <i class="bi bi-cart"></i>
-                            </div>
-                        </a>
-                        <a href="/profile" class="header-icon-item" title="Profile">
-                            <div class="icon-circle">
-                                <i class="bi bi-person"></i>
-                            </div>
-                        </a>
-                    }
-                    else
-                    {
-                        <a href="/admin" class="header-icon-item" title="Admin Dashboard">
-                            <div class="icon-circle admin-shield">
-                                <i class="bi bi-shield-lock"></i>
-                            </div>
-                        </a>
-                        <button class="btn btn-link text-white text-decoration-none ms-3" @onclick="Logout">Logout</button>
-                    }
+                    <a href="/cart" class="header-icon-item" title="Cart">
+                        <div class="icon-circle">
+                            <i class="bi bi-cart"></i>
+                        </div>
+                    </a>
+                    <a href="/profile" class="header-icon-item" title="Profile">
+                        <div class="icon-circle">
+                            <i class="bi bi-person"></i>
+                        </div>
+                    </a>
                 }
                 else
                 {
@@ -137,11 +122,4 @@
     }
 }
 
-<style>
-    .admin-shield {
-        background-color: #e74c3c !important;
-    }
-    .admin-shield i {
-        color: white !important;
-    }
-</style>
+

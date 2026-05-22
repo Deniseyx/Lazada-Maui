@@ -98,12 +98,6 @@
             return;
         }
 
-        if (AuthService.IsAdmin)
-        {
-            Navigation.NavigateTo("/admin");
-            return;
-        }
-
         Navigation.LocationChanged += HandleLocationChanged;
         UpdateSearchQuery();
         await LoadProducts();
