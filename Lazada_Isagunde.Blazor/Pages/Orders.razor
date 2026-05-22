@@ -44,7 +44,7 @@
                                 <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "images/placeholder.png" : item.ImageUrl)" class="item-thumb" />
                                 <div class="ms-3">
                                     <div class="item-title">@item.Title</div>
-                                    <div class="item-qty">x@item.Quantity</div>
+                                    <div class="item-qty">x@(item.Quantity)</div>
                                 </div>
                                 <div class="ms-auto fw-bold">@item.TotalPriceFormatted</div>
                             </div>

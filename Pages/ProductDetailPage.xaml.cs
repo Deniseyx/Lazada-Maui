@@ -77,13 +77,23 @@ public partial class ProductDetailPage : ContentPage
             return;
         }
 
+        var cartItems = await _firebaseService.GetCartItemsAsync(AuthService.UserId);
+        var existingItem = cartItems.FirstOrDefault(i => i.ProductId == _product.Id);
+        int currentQty = existingItem?.Quantity ?? 0;
+
+        if (currentQty + 1 > _product.Stock)
+        {
+            await DisplayAlert("Limit Reached", $"Cannot add to cart. Only {_product.Stock} items available in stock, and you already have {currentQty} in your cart.", "OK");
+            return;
+        }
+
         var cartItem = new CartItem
         {
             ProductId = _product.Id,
             Title = _product.Title,
             ImageUrl = _product.ImageUrl,
             Price = _product.Price,
-            Quantity = 1,
+            Quantity = currentQty + 1,
             SellerId = _product.SellerId,
             SellerName = string.IsNullOrEmpty(_product.SellerName) ? "Official Store" : _product.SellerName
         };

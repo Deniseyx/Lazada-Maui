@@ -4,6 +4,7 @@
 @inject FirebaseService FirebaseService
 @inject AuthService AuthService
 @inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
 
 <PageTitle>Checkout - Lazada</PageTitle>
 
@@ -65,7 +66,7 @@
                                 <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "images/placeholder.png" : item.ImageUrl)" class="item-thumb" />
                                 <div class="ms-3 flex-grow-1">
                                     <div class="item-title text-truncate" style="max-width: 300px;">@item.Title</div>
-                                    <div class="item-qty text-muted">x@item.Quantity</div>
+                                    <div class="item-qty text-muted">x@(item.Quantity)</div>
                                 </div>
                                 <div class="item-price fw-bold">@item.TotalPriceFormatted</div>
                             </div>
@@ -170,7 +171,7 @@
 
         if (string.IsNullOrEmpty(receiverName) || string.IsNullOrEmpty(shippingAddress))
         {
-            // Simple validation
+            await JSRuntime.InvokeVoidAsync("alert", "Shipping details are incomplete. Please provide a receiver name and a shipping address. If you are using saved details, please ensure they are set in your profile.");
             isProcessing = false;
             return;
         }

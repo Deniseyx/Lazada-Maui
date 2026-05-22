@@ -4,6 +4,7 @@
 @inject FirebaseService FirebaseService
 @inject AuthService AuthService
 @inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
 
 <PageTitle>My Cart - Lazada</PageTitle>
 
@@ -101,6 +102,15 @@
 
     private async Task UpdateQuantity(CartItem item, int delta)
     {
+        if (delta > 0)
+        {
+            var product = await FirebaseService.GetProductByIdAsync(item.ProductId);
+            if (product != null && item.Quantity + delta > product.Stock)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", $"Only {product.Stock} items available in stock.");
+                return;
+            }
+        }
         item.Quantity += delta;
         if (item.Quantity < 1) item.Quantity = 1;
         

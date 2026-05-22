@@ -45,6 +45,13 @@ public partial class CartPage : ContentPage
     {
         if (sender is Button btn && btn.CommandParameter is CartItem item)
         {
+            var product = await _firebaseService.GetProductByIdAsync(item.ProductId);
+            if (product != null && item.Quantity >= product.Stock)
+            {
+                await DisplayAlert("Limit Reached", $"Only {product.Stock} items available in stock.", "OK");
+                return;
+            }
+
             item.Quantity++;
             await _firebaseService.AddToCartAsync(AuthService.UserId, item);
             UpdateTotal();
